@@ -3,11 +3,10 @@ package main;
 
 public class RectangularMap extends AbstractWorldMap {
     private Vector2d upperBoundary;
-    private Vector2d lowerBoundary;
+    private Vector2d lowerBoundary = new Vector2d(0,0);
 
     public RectangularMap(int x, int y, int number) {
         this.upperBoundary = new Vector2d(x, y);
-        this.lowerBoundary = new Vector2d(0,0);
 
         for (int i = 0; i < number; i++)
             place(new Grass(generateRandomPos(number)));
