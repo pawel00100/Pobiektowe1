@@ -1,5 +1,6 @@
 package main.UI;
 
+import main.RectangularMap;
 import main.Vector2d;
 
 import javax.swing.*;
@@ -8,14 +9,13 @@ import java.awt.*;
 
 public class UI {
 
-    public static void main(String[] args){
-        new UI(new Vector2d(0,0), new Vector2d(20,10));
-    }
+    public UI(RectangularMap map){
+//        JFrame.setDefaultLookAndFeelDecorated(true);
+        try{UIManager.setLookAndFeel(
+                UIManager.getSystemLookAndFeelClassName());}
+        catch (Exception e){};
 
-
-    public UI(Vector2d lowerLeft, Vector2d upperRight){
-        JFrame.setDefaultLookAndFeelDecorated(true);
-        JFrame frame = new JFrame("BoxLayout Example X_AXIS");
+        JFrame frame = new JFrame("Animal World");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JPanel panel = new JPanel();
@@ -27,7 +27,7 @@ public class UI {
 
         SettingsPanel settingsPanel = new SettingsPanel();
         panel.add(settingsPanel);
-        MapPanel mapPanel = new MapPanel(lowerLeft, upperRight);
+        MapPanel mapPanel = new MapPanel(map);
         panel.add(mapPanel);
 
         frame.add(panel);
@@ -35,22 +35,5 @@ public class UI {
         frame.setVisible(true);
 
     }
-//    public UI(){
-//        //window properties
-//        JFrame frame = new JFrame("");
-//        frame.setSize(500, 500);
-//        frame.setLayout(new GridLayout(0, 1));
-//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//
-//        SettingsPanel settingsPanel = new SettingsPanel();
-//        frame.add(settingsPanel);
-//
-//        MapPanel mapPanel = new MapPanel(new Vector2d(0,0), new Vector2d(10,10));
-//        frame.add(mapPanel);
-//
-//        frame.pack();
-//        frame.setVisible(true);
-//    }
-
 
 }

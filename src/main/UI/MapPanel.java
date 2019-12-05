@@ -1,63 +1,83 @@
 package main.UI;
 
+import main.Animal;
+import main.Grass;
+import main.RectangularMap;
 import main.Vector2d;
 
 import javax.swing.*;
 import java.awt.*;
 
 class MapPanel extends JPanel {
-    private int maxSize = 400;
     private int widthInTiles;
     private int heightInTiles;
     private int tileSize;
-    private Color gravel = new Color(200,150,100);
-    private Color gravel2 = new Color(194,140,86);
+    private Color gravel = new Color(200, 150, 100);
+    private Color gravel2 = new Color(194, 140, 86);
+    private Color animalColor = Color.DARK_GRAY;
+    private Color grassColor = new Color(48, 159, 53);
+    private RectangularMap map;
 
-    MapPanel(Vector2d lowerLeft, Vector2d upperRight){
+    MapPanel(RectangularMap map) {
         super();
+        this.map = map;
 
         //this section in code makes sure that each tile is square and neither width or height is above maxSize
-        this.widthInTiles = upperRight.x - lowerLeft.x + 1;
-        this.heightInTiles = upperRight.y - lowerLeft.y + 1;
-        double heightToWidthRatio = (double) heightInTiles / widthInTiles;
+        this.widthInTiles = this.map.upperBoundary.x - this.map.lowerBoundary.x + 1;
+        this.heightInTiles = this.map.upperBoundary.y - this.map.lowerBoundary.y + 1;
+        double heightToWidthRatio = (double) this.heightInTiles / this.widthInTiles;
 
-        if(heightToWidthRatio <= 1)
-            this.tileSize = this.maxSize/ widthInTiles;
+        int maxWindowSize = Math.min(360 + Math.max(widthInTiles, heightInTiles)*6, 1500); //scaling window size to the number of tiles with max limit
+        if (heightToWidthRatio <= 1)
+            this.tileSize = maxWindowSize / this.widthInTiles;
         else
-            this.tileSize = this.maxSize/ heightInTiles;
+            this.tileSize = maxWindowSize / this.heightInTiles;
 
-        int width = widthInTiles * tileSize;
-        int height = heightInTiles * tileSize;
-
+        int width = this.widthInTiles * this.tileSize;
+        int height = this.heightInTiles * this.tileSize;
         this.setPreferredSize(new Dimension(width, height));
 
 //        repaint();
 
     }
 
-    private void drawMap(Graphics gAbstract){
+    private void drawMap(Graphics gAbstract) {
         Graphics2D g = (Graphics2D) gAbstract;
         drawBackground(g);
     }
 
-    private void drawBackground(Graphics2D g){
+    private void drawBackground(Graphics2D g) {
         for (int i = 0; i < this.heightInTiles; i++)
-            for (int j = 0; j< this.widthInTiles; j++){
-                Color color;
-                if( (i+j) % 2 == 0 )
-                    color = this.gravel;
-                else
-                    color = this.gravel2;
-                drawSquare(g, new Vector2d(this.tileSize*j, this.tileSize*i), this.tileSize, color);
-            }
+            for (int j = 0; j < this.widthInTiles; j++)
+                drawObject(g, new Vector2d(j, i));
     }
 
-    private void drawSquare(Graphics2D g, Vector2d position, int size, Color color){ //position of upper left corner
+    private void drawObject(Graphics2D g, Vector2d tilePosition) {
+        Color color;
+        if(map.isOccupied(tilePosition)){
+            if (map.objectAt(tilePosition) instanceof Animal)
+                color = animalColor;
+            else if (map.objectAt(tilePosition) instanceof Grass)
+                color = grassColor;
+            else
+                color = Color.RED;
+        }
+        else if ((tilePosition.x + tilePosition.y) % 2 == 0)
+            color = this.gravel;
+        else
+            color = this.gravel2;
+        drawSquare(g, tilePosition, color);
+    }
+
+    private void drawSquare(Graphics2D g, Vector2d tilePosition, Color color) {
         g.setColor(color);
-        g.fillRect(position.x, position.y ,size, size);
+        int xWindowPosition = tilePosition.x * this.tileSize;
+        int yWindowPosition = (this.heightInTiles - tilePosition.y - 1) * this.tileSize; //window is drawn from top to bottom, tile position is Cartesian
+        g.fillRect(xWindowPosition, yWindowPosition, this.tileSize, this.tileSize);
     }
 
-    public void paint(Graphics G){
+
+    public void paint(Graphics G) {
         drawMap(G);
 //        G.fillRect(0, 0 , width, height);
     }
