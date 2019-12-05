@@ -1,6 +1,11 @@
 package test;
 
+import main.map.IWorldMap;
+import main.map.RectangularMap;
+import main.mapElements.Animal;
+import main.mapElements.MapDirection;
 import main.*;
+import main.mapElements.MoveDirection;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

@@ -1,4 +1,9 @@
-package main;
+package main.map;
+
+import main.mapElements.AbstractMapElement;
+import main.mapElements.Animal;
+import main.mapElements.MoveDirection;
+import main.Vector2d;
 
 import java.util.*;
 

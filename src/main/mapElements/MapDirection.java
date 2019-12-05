@@ -1,4 +1,6 @@
-package main;
+package main.mapElements;
+
+import main.Vector2d;
 
 public enum MapDirection {
     NORTH, EAST, SOUTH, WEST;

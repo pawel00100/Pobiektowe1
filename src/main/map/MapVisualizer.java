@@ -1,4 +1,6 @@
-package main;
+package main.map;
+
+import main.Vector2d;
 
 /**
  * The map visualizer converts the {@link IWorldMap} map into a string

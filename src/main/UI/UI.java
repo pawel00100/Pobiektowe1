@@ -1,7 +1,6 @@
 package main.UI;
 
-import main.RectangularMap;
-import main.Vector2d;
+import main.map.RectangularMap;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;

@@ -1,4 +1,8 @@
-package main;
+package main.map;
+
+import main.mapElements.AbstractMapElement;
+import main.mapElements.MoveDirection;
+import main.Vector2d;
 
 /**
  * The interface responsible for interacting with the map of the world.

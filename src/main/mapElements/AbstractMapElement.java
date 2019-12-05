@@ -1,4 +1,7 @@
-package main;
+package main.mapElements;
+
+import main.map.IPositionChangeObserver;
+import main.Vector2d;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -11,7 +14,7 @@ public abstract class AbstractMapElement {
         return new Vector2d(this.position);
     }
 
-    void addObserver(IPositionChangeObserver observer){
+    public void addObserver(IPositionChangeObserver observer){
         this.observers.add(observer);
     }
 

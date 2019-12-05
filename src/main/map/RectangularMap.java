@@ -1,5 +1,8 @@
-package main;
+package main.map;
 
+
+import main.mapElements.Grass;
+import main.Vector2d;
 
 public class RectangularMap extends AbstractWorldMap {
     public final Vector2d upperBoundary;

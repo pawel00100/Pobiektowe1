@@ -1,5 +1,8 @@
-package main;
+package main.mapElements;
 
+
+import main.map.IWorldMap;
+import main.Vector2d;
 
 public class Animal extends AbstractMapElement{
     private MapDirection currentDirection = MapDirection.NORTH;

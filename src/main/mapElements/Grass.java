@@ -1,8 +1,10 @@
-package main;
+package main.mapElements;
+
+import main.Vector2d;
 
 public class Grass extends AbstractMapElement{
 
-    Grass(Vector2d position) {
+    public Grass(Vector2d position) {
         this.position = position;
     }
 

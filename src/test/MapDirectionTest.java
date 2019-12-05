@@ -1,6 +1,6 @@
 package test;
 
-import main.MapDirection;
+import main.mapElements.MapDirection;
 import main.Vector2d;
 import org.junit.Test;
 

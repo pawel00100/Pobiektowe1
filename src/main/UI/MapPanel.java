@@ -1,8 +1,8 @@
 package main.UI;
 
-import main.Animal;
-import main.Grass;
-import main.RectangularMap;
+import main.mapElements.Animal;
+import main.mapElements.Grass;
+import main.map.RectangularMap;
 import main.Vector2d;
 
 import javax.swing.*;
