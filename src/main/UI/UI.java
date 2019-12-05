@@ -3,15 +3,17 @@ package main.UI;
 import main.Vector2d;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
 
 public class UI {
 
     public static void main(String[] args){
-        new UI();
+        new UI(new Vector2d(0,0), new Vector2d(20,10));
     }
 
 
-    public UI(){
+    public UI(Vector2d lowerLeft, Vector2d upperRight){
         JFrame.setDefaultLookAndFeelDecorated(true);
         JFrame frame = new JFrame("BoxLayout Example X_AXIS");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -21,9 +23,11 @@ public class UI {
 
         panel.setLayout(boxlayout);
 
+        panel.setBorder(new EmptyBorder(new Insets(10,10,10,10)));
+
         SettingsPanel settingsPanel = new SettingsPanel();
         panel.add(settingsPanel);
-        MapPanel mapPanel = new MapPanel(new Vector2d(0,0), new Vector2d(10,10));
+        MapPanel mapPanel = new MapPanel(lowerLeft, upperRight);
         panel.add(mapPanel);
 
         frame.add(panel);
