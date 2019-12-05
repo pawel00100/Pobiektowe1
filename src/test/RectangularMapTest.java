@@ -104,21 +104,6 @@ public class RectangularMapTest {
     }
 
 
-    @Test
-    public void parseAndRun() {
-        IWorldMap map = new RectangularMap(4, 4);
 
-        Animal animal1 = new Animal(map); //(2,2)
-        Animal animal2 = new Animal(map, 4, 4);
-        Animal animal3 = new Animal(map, 1, 1);
-
-        String[] args = {"f", "b", "r", "l", "r", "f"};
-
-        map.run(OptionsParser.parse(args));
-
-        assertEquals(animal1, map.objectAt(new Vector2d(2, 3)));
-        assertEquals(animal2, map.objectAt(new Vector2d(4, 3)));
-        assertEquals(animal3, map.objectAt(new Vector2d(2, 1)));
-    }
 
 }

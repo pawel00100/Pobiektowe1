@@ -3,11 +3,17 @@ package main;
 
 public class RectangularMap extends AbstractWorldMap {
     private Vector2d upperBoundary;
-    private Vector2d lowerBoundary;
+    private Vector2d lowerBoundary = new Vector2d(0,0);
 
-    public RectangularMap(int x, int y) {
+    public RectangularMap(int x, int y, int number) {
         this.upperBoundary = new Vector2d(x, y);
-        this.lowerBoundary = new Vector2d(0,0);
+
+        for (int i = 0; i < number; i++)
+            place(new Grass(generateRandomPos(number)));
+    }
+
+    public RectangularMap(int x, int y){
+        this(x, y, 0);
     }
 
     @Override
@@ -23,6 +29,16 @@ public class RectangularMap extends AbstractWorldMap {
 
     private Boolean vectorInBoundary(Vector2d vector) {
         return (vector.follows(this.lowerBoundary) && vector.precedes( this.upperBoundary));
+    }
+
+    private Vector2d generateRandomPos(int number) {
+        Vector2d vec;
+        do{
+            double maxPos = Math.sqrt(number * 20);
+            vec = new Vector2d((int) (maxPos * Math.random()), (int) (maxPos * Math.random()));
+        }
+        while(!this.canMoveTo(vec));
+        return vec;
     }
 
 }

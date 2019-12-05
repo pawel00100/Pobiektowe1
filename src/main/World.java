@@ -3,47 +3,12 @@ package main;
 public class World {
     public static void main(String[] Argc) {
         try {
-            Vector2d position1 = new Vector2d(1, 2);
-            System.out.println(position1);
-            Vector2d position2 = new Vector2d(-2, 1);
-            System.out.println(position2);
-            System.out.println(position1.add(position2));
 
-            AbstractWorldMap map = new RectangularMap(4, 4);
-            Animal animal = new Animal(map);
-            System.out.println(animal);
-            animal.move(MoveDirection.RIGHT);
-            animal.move(MoveDirection.FORWARD);
-            animal.move(MoveDirection.FORWARD);
-            animal.move(MoveDirection.FORWARD);
-            System.out.println(animal);
-
-
-            String[] args = {"f", "b", "r", "l", "f", "f", "r", "r", "f", "f", "f", "f", "f", "f", "f", "f"};
-            MoveDirection[] directions = OptionsParser.parse(args);
-            map = new RectangularMap(10, 5);
+            RectangularMap map = new RectangularMap(10, 5, 3);
             new Animal(map);
             new Animal(map, 3, 4);
             System.out.println(map);
 
-            map.run(directions);
-
-            System.out.println(map);
-
-
-            GrassField map1 = new GrassField(0);
-            new Animal(map1);
-            new Animal(map1, 3, 4);
-            new Animal(map1, 2, 8);
-            new Animal(map1, 5, 1);
-            new Animal(map1, 4, 3);
-            System.out.println(map1.boundary.getLowerBoundary());
-            System.out.println(map1.boundary.getUpperBoundary());
-
-            map1.run(directions);
-            System.out.println(map1);
-            map1.run(directions);
-            System.out.println(map1);
         }
         catch(IllegalArgumentException exception){
             System.out.println(exception.getMessage());
