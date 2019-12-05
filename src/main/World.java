@@ -20,18 +20,15 @@ public class World {
 
 
             String[] args = {"f", "b", "r", "l", "f", "f", "r", "r", "f", "f", "f", "f", "f", "f", "f", "f"};
-            MoveDirection[] directions = OptionsParser.parse(args);
             map = new RectangularMap(10, 5);
             new Animal(map);
             new Animal(map, 3, 4);
             System.out.println(map);
 
-            map.run(directions);
-
-            System.out.println(map);
 
 
-            GrassField map1 = new GrassField(0);
+
+            GrassField map1 = new GrassField(5);
             new Animal(map1);
             new Animal(map1, 3, 4);
             new Animal(map1, 2, 8);
@@ -40,9 +37,6 @@ public class World {
             System.out.println(map1.boundary.getLowerBoundary());
             System.out.println(map1.boundary.getUpperBoundary());
 
-            map1.run(directions);
-            System.out.println(map1);
-            map1.run(directions);
             System.out.println(map1);
         }
         catch(IllegalArgumentException exception){
