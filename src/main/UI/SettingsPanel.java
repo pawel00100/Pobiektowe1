@@ -2,6 +2,7 @@ package main.UI;
 
 import javax.swing.*;
 import java.awt.*;
+import java.text.DecimalFormat;
 
 class SettingsPanel extends JPanel {
     SettingsPanel(){
@@ -23,7 +24,12 @@ class SettingsPanel extends JPanel {
     }
 
     private String sliderValue(JSlider slider){
-        return Integer.toString(slider.getValue());
+        int input = slider.getValue(); //input 0 to 100
+        double output =  Math.pow(10, ( (double) input / 50 - 1)); //logarithmic slider 0.1 to 10
+        return String.format("%.1f", output);
+
+
+
     }
 
 

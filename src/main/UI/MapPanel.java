@@ -27,7 +27,7 @@ class MapPanel extends JPanel {
         this.heightInTiles = this.map.upperBoundary.y - this.map.lowerBoundary.y + 1;
         double heightToWidthRatio = (double) this.heightInTiles / this.widthInTiles;
 
-        int maxWindowSize = Math.min(360 + Math.max(widthInTiles, heightInTiles)*6, 1500); //scaling window size to the number of tiles with max limit
+        int maxWindowSize = Math.min(360 + Math.max(widthInTiles, heightInTiles)*6, 1200); //scaling window size to the number of tiles with max limit
         if (heightToWidthRatio <= 1)
             this.tileSize = maxWindowSize / this.widthInTiles;
         else

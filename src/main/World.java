@@ -8,10 +8,10 @@ public class World {
     public static void main(String[] Argc) {
         try {
 
-            RectangularMap map = new RectangularMap(30, 20, 5);
+            RectangularMap map = new RectangularMap(30, 20, 20);
             new Animal(map, 13, 16);
             new Animal(map, 5, 4);
-            System.out.println(map);
+//            System.out.println(map);
 
 //            RectangularMap map = new RectangularMap(60, 40, 10);
 //            new Animal(map);
