@@ -3,6 +3,7 @@ package main;
 import main.map.RectangularMap;
 import main.mapElements.Animal;
 import main.UI.UI;
+import main.runner.Run;
 
 public class World {
     public static void main(String[] Argc) {
@@ -20,6 +21,10 @@ public class World {
 //            new Animal(map, 13, 26);
 
             new UI(map);
+
+            new Run(map);
+
+            System.out.println("aaaa");
 
         }
         catch(IllegalArgumentException exception){

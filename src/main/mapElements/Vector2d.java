@@ -1,4 +1,4 @@
-package main;
+package main.mapElements;
 
 public class Vector2d {
     public final int x;

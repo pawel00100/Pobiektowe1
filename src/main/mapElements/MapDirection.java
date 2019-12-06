@@ -1,9 +1,7 @@
 package main.mapElements;
 
-import main.Vector2d;
-
 public enum MapDirection {
-    NORTH, EAST, SOUTH, WEST;
+    NORTH, NORTHEAST, EAST, SOUTHEAST, SOUTH, SOUTHWEST, WEST, NORTHWEST;
 
     public String toString() {
         switch (this) {
@@ -30,7 +28,7 @@ public enum MapDirection {
             case EAST:
                 return "E";
             default:
-                return null;
+                return "X";
         }
     }
 
@@ -48,9 +46,13 @@ public enum MapDirection {
 
     static {
         NORTH.vector = new Vector2d(0, 1);
+        NORTHEAST.vector = new Vector2d(1, 1);
         EAST.vector = new Vector2d(1, 0);
+        SOUTHEAST.vector = new Vector2d(1, -1);
         SOUTH.vector = new Vector2d(0, -1);
+        SOUTHWEST.vector = new Vector2d(-1, -1);
         WEST.vector = new Vector2d(-1, 0);
+        NORTHWEST.vector = new Vector2d(-1, 1);
     }
 
     public Vector2d toUnitVector() {

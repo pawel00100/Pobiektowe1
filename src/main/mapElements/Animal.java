@@ -2,10 +2,10 @@ package main.mapElements;
 
 
 import main.map.IWorldMap;
-import main.Vector2d;
 
 public class Animal extends AbstractMapElement{
     private MapDirection currentDirection = MapDirection.NORTH;
+    public int Energy = 100;
 
     private IWorldMap map;
 
@@ -56,5 +56,8 @@ public class Animal extends AbstractMapElement{
         }
     }
 
+    private void generateDirection(){
+        this.currentDirection = MapDirection.values()[(int)(8 * Math.random())];
+    }
 
 }

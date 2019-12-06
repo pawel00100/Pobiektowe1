@@ -1,6 +1,6 @@
 package test;
 
-import main.Vector2d;
+import main.mapElements.Vector2d;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

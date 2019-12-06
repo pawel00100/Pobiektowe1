@@ -1,7 +1,6 @@
 package main.mapElements;
 
 import main.map.IPositionChangeObserver;
-import main.Vector2d;
 
 import java.util.LinkedList;
 import java.util.List;

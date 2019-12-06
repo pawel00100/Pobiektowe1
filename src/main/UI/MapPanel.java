@@ -3,7 +3,7 @@ package main.UI;
 import main.mapElements.Animal;
 import main.mapElements.Grass;
 import main.map.RectangularMap;
-import main.Vector2d;
+import main.mapElements.Vector2d;
 
 import javax.swing.*;
 import java.awt.*;
