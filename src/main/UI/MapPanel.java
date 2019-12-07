@@ -54,10 +54,10 @@ class MapPanel extends JPanel {
 
     private void drawObject(Graphics2D g, Vector2d tilePosition) {
         Color color;
-        if(map.isOccupied(tilePosition)){
-            if (map.objectAt(tilePosition) instanceof Animal)
+        if(map.isTileOccupied(tilePosition)){
+            if (map.isAnimalOnTile(tilePosition))
                 color = animalColor;
-            else if (map.objectAt(tilePosition) instanceof Grass)
+            else if (map.isGrassOnTile(tilePosition))
                 color = grassColor;
             else
                 color = Color.RED;
@@ -72,7 +72,7 @@ class MapPanel extends JPanel {
     private void drawSquare(Graphics2D g, Vector2d tilePosition, Color color) {
         g.setColor(color);
         int xWindowPosition = tilePosition.x * this.tileSize;
-        int yWindowPosition = (this.heightInTiles - tilePosition.y - 1) * this.tileSize; //window is drawn from top to bottom, tile position is Cartesian
+        int yWindowPosition = (this.heightInTiles - tilePosition.y - 1) * this.tileSize; //window is drawn from top to bottom, while tile position is Cartesian
         g.fillRect(xWindowPosition, yWindowPosition, this.tileSize, this.tileSize);
     }
 

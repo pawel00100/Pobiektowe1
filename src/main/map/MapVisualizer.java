@@ -12,13 +12,13 @@ public class  MapVisualizer {
   private static final String EMPTY_CELL = " ";
   private static final String FRAME_SEGMENT = "-";
   private static final String CELL_SEGMENT = "|";
-  private IWorldMap map;
+  private RectangularMap map;
 
   /**
    * Initializes the MapVisualizer with an instance of map to visualize.
    * @param map
    */
-  public MapVisualizer(IWorldMap map) {
+  public MapVisualizer(RectangularMap map) {
     this.map = map;
   }
 
@@ -73,11 +73,14 @@ public class  MapVisualizer {
 
   private String drawObject(Vector2d currentPosition) {
     String result = null;
-    if (this.map.isOccupied(currentPosition)) {
-      Object object = this.map.objectAt(currentPosition);
-      if (object != null) {
-        result = object.toString();
-      } else {
+    if (this.map.isTileOccupied(currentPosition)) {
+//      Object object = this.map.objectAt(currentPosition);
+      if (map.isAnimalOnTile(currentPosition) ) {
+        result = "x";
+      }else if  (map.isGrassOnTile(currentPosition) ) {
+        result = "g";
+      }
+      else {
         result = EMPTY_CELL;
       }
     } else {

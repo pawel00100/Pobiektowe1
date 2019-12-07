@@ -20,26 +20,4 @@ public class AnimalTest {
     }
 
 
-    @Test
-    public void move() {
-        IWorldMap map = new RectangularMap(4,4);
-        Animal testedAnimal = new Animal(map);
-        Vector2d vector;
-
-        testedAnimal.move(MoveDirection.RIGHT);
-        assertEquals(testedAnimal.getDirection(), MapDirection.EAST);
-
-        testedAnimal.move(MoveDirection.FORWARD);
-        vector = new Vector2d(3, 2);
-        assertEquals(testedAnimal.getPosition(), vector);
-
-        testedAnimal.move(MoveDirection.FORWARD);
-        vector = new Vector2d(4, 2);
-        assertEquals(testedAnimal.getPosition(), vector);
-
-        testedAnimal.move(MoveDirection.FORWARD);   //Boundary on x=4
-        vector = new Vector2d(4, 2);
-        assertEquals(testedAnimal.getPosition(), vector);
-    }
-
 }

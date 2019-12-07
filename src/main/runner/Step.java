@@ -8,5 +8,11 @@ class Step {
     Step(RectangularMap map){
         this.map = map;
         System.out.println("aa");
+        /*
+        map.updateEnergies()
+        map.run()
+        map.eatAndReproduce()
+        map.generateGrass()
+        */
     }
 }

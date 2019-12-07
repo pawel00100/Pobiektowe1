@@ -32,16 +32,6 @@ public enum MapDirection {
         }
     }
 
-    public MapDirection next() {
-        int nextNum = (this.ordinal() + 1) % 4;
-        return MapDirection.values()[nextNum];
-    }
-
-    public MapDirection previous() {
-        int prevNum = (this.ordinal() + 3) % 4;
-        return MapDirection.values()[prevNum];
-    }
-
     private Vector2d vector;
 
     static {

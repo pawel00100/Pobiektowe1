@@ -13,11 +13,9 @@ public class Run {
             try{
                 Thread.sleep(500);
             }
-            catch (Exception E){}
+            catch (Exception ignored){}
         }
 
     }
-
-
 
 }
