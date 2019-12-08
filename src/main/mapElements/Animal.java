@@ -13,10 +13,14 @@ public class Animal extends AbstractMapElement{
     private List<IPositionChangeObserver> observers = new LinkedList<>();
     private IWorldMap map;
 
-    public Animal(IWorldMap map, int x, int y) {
-        this.position = new Vector2d(x, y);
+    public Animal(IWorldMap map, Vector2d position) {
+        this.position = position;
         this.map = map;
         map.place(this);
+    }
+
+    public Animal(IWorldMap map, int x, int y) {
+        this(map, new Vector2d(x, y));
     }
 
     public Animal(IWorldMap map) {

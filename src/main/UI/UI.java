@@ -1,6 +1,7 @@
 package main.UI;
 
 import main.map.RectangularMap;
+import org.json.JSONObject;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -8,7 +9,7 @@ import java.awt.*;
 
 public class UI {
 
-    public UI(RectangularMap map){
+    public UI(RectangularMap map, JSONObject parameters){
 //        JFrame.setDefaultLookAndFeelDecorated(true);
         try{UIManager.setLookAndFeel(
                 UIManager.getSystemLookAndFeelClassName());}
@@ -24,7 +25,7 @@ public class UI {
 
         panel.setBorder(new EmptyBorder(new Insets(10,10,10,10)));
 
-        SettingsPanel settingsPanel = new SettingsPanel();
+        SettingsPanel settingsPanel = new SettingsPanel(parameters);
         panel.add(settingsPanel);
         MapPanel mapPanel = new MapPanel(map);
         panel.add(mapPanel);
