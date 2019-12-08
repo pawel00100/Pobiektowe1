@@ -15,8 +15,10 @@ class MapPanel extends JPanel implements IMapStateChangeObserver {
     private int tileSize;
     private Color gravel = new Color(200, 150, 100);
     private Color gravel2 = new Color(194, 140, 86);
+    private Color jungle1 = new Color(136, 161, 73);
+    private Color jungle2 = new Color(130, 156, 71);
     private Color animalColor = Color.DARK_GRAY;
-    private Color grassColor = new Color(48, 159, 53);
+    private Color grassColor = new Color(2, 172, 24);
     private RectangularMap map;
 
     MapPanel(RectangularMap map) {
@@ -64,10 +66,19 @@ class MapPanel extends JPanel implements IMapStateChangeObserver {
             else
                 color = Color.RED;
         }
-        else if ((tilePosition.x + tilePosition.y) % 2 == 0)
-            color = this.gravel;
-        else
-            color = this.gravel2;
+        else if(this.map.isJungle(tilePosition)){
+            if ((tilePosition.x + tilePosition.y) % 2 == 0)
+                color = this.jungle1;
+            else
+                color = this.jungle2;
+        }
+        else{
+            if ((tilePosition.x + tilePosition.y) % 2 == 0)
+                color = this.gravel;
+            else
+                color = this.gravel2;
+        }
+
         drawSquare(g, tilePosition, color);
     }
 

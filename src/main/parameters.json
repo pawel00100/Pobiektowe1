@@ -1,7 +1,6 @@
 { 
     "width": 40,
     "height": 30,
-    "initialGrass": 2,
     "initialAnimals": 30,
-    "immortalAnimals" : true
+    "jungleRatio" : 0.1
 }
