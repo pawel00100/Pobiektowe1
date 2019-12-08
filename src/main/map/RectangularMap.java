@@ -10,7 +10,7 @@ public class RectangularMap implements IWorldMap, IPositionChangeObserver {
     private JSONObject parameters;
 
     private List<Animal> animalList = new ArrayList<>();
-    private Map<Vector2d, List<AbstractMapElement>> tilesOnMap = new HashMap<>(); //map contains lists with elements on each tile
+    private Map<Vector2d, Tile> tilesOnMap = new LinkedHashMap<>(); //map contains lists with elements on each tile
     private int freeTiles;
 
     public final Vector2d upperBoundary;
@@ -22,10 +22,10 @@ public class RectangularMap implements IWorldMap, IPositionChangeObserver {
         this.upperBoundary = new Vector2d(x, y);
         this.freeTiles = (this.upperBoundary.x - this.lowerBoundary.x + 1) * (this.upperBoundary.y - this.lowerBoundary.y + 1);
 
-        for (int i = 0; i < initialGrass && freeTiles != 0; i++)
-            place(new Grass(generateRandomUnoccupiedPosition()));
+        for (int i = 0; i < initialGrass && freeTiles > 0; i++)
+            placeSinglePlant();
 
-        for (int i = 0; i < initialAnimals && freeTiles != 0; i++)
+        for (int i = 0; i < initialAnimals && freeTiles > 0; i++)
             new Animal(this, generateRandomUnoccupiedPosition());
     }
 
@@ -60,8 +60,6 @@ public class RectangularMap implements IWorldMap, IPositionChangeObserver {
     }
 
     public void placeOnForcedPosition(AbstractMapElement element, Vector2d position) { //places on given position even if it contradicts instance's position
-        if(isElementOnMap(element))
-            throw new IllegalArgumentException("Trying to put element that is already on chosen position");
         putOnTile(element, position);
         if( element instanceof Animal) {
             ((Animal) element).addObserver(this);
@@ -70,8 +68,6 @@ public class RectangularMap implements IWorldMap, IPositionChangeObserver {
     }
 
     public void placeOnlyOnHashmap(AbstractMapElement element, Vector2d position){
-        if(isElementOnMap(element))
-            throw new IllegalArgumentException("Trying to put element that is already on chosen position");
         putOnTile(element, position);
         if( element instanceof Animal) {
             ((Animal) element).addObserver(this);
@@ -84,7 +80,7 @@ public class RectangularMap implements IWorldMap, IPositionChangeObserver {
 
     public void remove(AbstractMapElement element, Vector2d position){ //removes from given position even if it contradicts instance's position
         if(!isElementOnMap(element))
-            throw new IllegalArgumentException("Trying to put element that is already on chosen position");
+            throw new IllegalArgumentException("Trying to remove nonexistent element " + element);
         removeFromTile(element, position);
         if( element instanceof Animal) {
             ((Animal) element).removeObserver(this);
@@ -94,7 +90,7 @@ public class RectangularMap implements IWorldMap, IPositionChangeObserver {
 
     public void removeOnlyFromHashmap(AbstractMapElement element, Vector2d position){//doesn't affect animalList
         if(!isElementOnMap(element))
-            throw new IllegalArgumentException("Trying to put element that is already on chosen position");
+            throw new IllegalArgumentException("Trying to remove nonexistent element " + element);
         removeFromTile(element, position);
         if( element instanceof Animal) {
             ((Animal) element).removeObserver(this);
@@ -119,46 +115,59 @@ public class RectangularMap implements IWorldMap, IPositionChangeObserver {
     public boolean isElementOnMap(AbstractMapElement element){
         Vector2d position = element.getPosition();
         if(tilesOnMap.containsKey(position))
-            return tilesOnMap.get(position).contains(element);
+            return tilesOnMap.get(position).isElementOnTile(element);
 
         return false;
     }
 
     public boolean isAnimalOnTile(Vector2d position){
         if(isTileOccupied(position))
-            for (AbstractMapElement element : tilesOnMap.get(position))
-                if (element instanceof Animal)
-                    return true;
+            return tilesOnMap.get(position).isAnimalOnTile();
 
         return false;
     }
 
     public boolean isGrassOnTile(Vector2d position){
         if(isTileOccupied(position))
-            for (AbstractMapElement element : tilesOnMap.get(position))
-                if (element instanceof Grass)
-                    return true;
+            return tilesOnMap.get(position).isGrassOnTile();
 
         return false;
     }
 
+    public void updateEnergies(){
+        List<Animal> newList = new ArrayList<>(animalList);
+        for (Animal animal : newList)
+            if (animal.getEnergy() <= 0)
+                remove(animal);
+    }
+
     public void run(){
-        for(Animal animal : animalList){
-            animal.move();
-        }
+        animalList.forEach(Animal::move);
+
+        tilesOnMap.values().forEach(Tile::eatAndReproduce);
+
         mapStateChanged();
+    }
+
+    public void placePlants(){
+            placeSinglePlant();
+    }
+
+    private void placeSinglePlant(){
+        if(freeTiles > 0)
+        place(new Grass(generateRandomUnoccupiedPosition()));
     }
 
     private void putOnTile(AbstractMapElement element, Vector2d position){ //adds element on tile
         if(!tilesOnMap.containsKey(position)) {
-            this.tilesOnMap.put(position, new LinkedList<AbstractMapElement>());
+            this.tilesOnMap.put(position, new Tile());
             this.freeTiles--;
         }
-        this.tilesOnMap.get(position).add(element);
+        this.tilesOnMap.get(position).putOnTile(element);
     }
 
     private void removeFromTile(AbstractMapElement element, Vector2d position){
-        this.tilesOnMap.get(position).remove(element);
+        this.tilesOnMap.get(position).removeFromTile(element);
 
         if(this.tilesOnMap.get(position).isEmpty()){
             this.tilesOnMap.remove(position);

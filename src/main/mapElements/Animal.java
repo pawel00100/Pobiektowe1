@@ -38,6 +38,14 @@ public class Animal extends AbstractMapElement{
         return this.currentDirection;
     }
 
+    public void setEnergy(int energy){ //only for tests
+        this.energy = energy;
+    }
+
+    public void appendEnergy(int energy){
+        this.energy += energy;
+    }
+
     public void updateEnergy(){
         this.energy--;
         if(this.energy <= 0);
@@ -56,6 +64,8 @@ public class Animal extends AbstractMapElement{
         positionToBeChangedTo(futureVector);
         this.position = futureVector;
     }
+
+
 
     private void generateDirection(){
         this.currentDirection = MapDirection.values()[(int)(8 * Math.random())];
@@ -87,5 +97,6 @@ public class Animal extends AbstractMapElement{
 
         return position;
     }
+
 
 }

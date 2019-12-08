@@ -1,6 +1,7 @@
 { 
-    "width": 30,
-    "height": 20,
+    "width": 40,
+    "height": 30,
     "initialGrass": 2,
-    "initialAnimals": 3
+    "initialAnimals": 3,
+    "immortalAnimals" : true
 }

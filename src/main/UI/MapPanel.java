@@ -87,7 +87,6 @@ class MapPanel extends JPanel implements IMapStateChangeObserver {
 
     @Override
     public void mapStateChanged() {
-        System.out.println("acknowledged map state change");
         repaint();
     }
 }
