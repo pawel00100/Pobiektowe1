@@ -16,6 +16,7 @@ public class RectangularMap implements IWorldMap, IPositionChangeObserver {
     public final Vector2d upperBoundary;
     public final Vector2d lowerBoundary = new Vector2d(0, 0);
 
+    private List<IMapStateChangeObserver> observers = new LinkedList<>();
 
     public RectangularMap(int x, int y, int initialGrass, int initialAnimals) {
         this.upperBoundary = new Vector2d(x, y);
@@ -36,10 +37,21 @@ public class RectangularMap implements IWorldMap, IPositionChangeObserver {
         this(parameters.getInt("width") - 1,parameters.getInt("height") - 1,parameters.getInt("initialGrass"), parameters.getInt("initialAnimals"));
         this.parameters = parameters;
     }
+
     @Override
     public String toString() {
         if (upperBoundary == null || lowerBoundary == null) return "no items";
         return new MapVisualizer(this).draw(this.lowerBoundary, this.upperBoundary);
+    }
+
+    @Override
+    public Vector2d lowerBoundary() {
+        return this.lowerBoundary;
+    }
+
+    @Override
+    public Vector2d upperBoundary() {
+        return this.upperBoundary;
     }
 
     @Override
@@ -52,7 +64,16 @@ public class RectangularMap implements IWorldMap, IPositionChangeObserver {
             throw new IllegalArgumentException("Trying to put element that is already on chosen position");
         putOnTile(element, position);
         if( element instanceof Animal) {
+            ((Animal) element).addObserver(this);
             this.animalList.add((Animal) element);
+        }
+    }
+
+    public void placeOnlyOnHashmap(AbstractMapElement element, Vector2d position){
+        if(isElementOnMap(element))
+            throw new IllegalArgumentException("Trying to put element that is already on chosen position");
+        putOnTile(element, position);
+        if( element instanceof Animal) {
             ((Animal) element).addObserver(this);
         }
     }
@@ -66,7 +87,16 @@ public class RectangularMap implements IWorldMap, IPositionChangeObserver {
             throw new IllegalArgumentException("Trying to put element that is already on chosen position");
         removeFromTile(element, position);
         if( element instanceof Animal) {
+            ((Animal) element).removeObserver(this);
             this.animalList.remove((Animal) element);
+        }
+    }
+
+    public void removeOnlyFromHashmap(AbstractMapElement element, Vector2d position){//doesn't affect animalList
+        if(!isElementOnMap(element))
+            throw new IllegalArgumentException("Trying to put element that is already on chosen position");
+        removeFromTile(element, position);
+        if( element instanceof Animal) {
             ((Animal) element).removeObserver(this);
         }
     }
@@ -77,12 +107,12 @@ public class RectangularMap implements IWorldMap, IPositionChangeObserver {
     }
 
 
-
-    public void elementPositionToBeChanged(AbstractMapElement element, Vector2d futurePosition) { //changes position of an element, asssumes calling method will change inner state
+    @Override
+    public void elementPositionToBeChangedTo(AbstractMapElement element, Vector2d futurePosition) { //changes position of an element, asssumes calling method will change inner state
         Vector2d currentPosition = element.getPosition();
         if (futurePosition != null && !currentPosition.equals(futurePosition)) {
-            this.remove(element);
-            this.placeOnForcedPosition(element, futurePosition);
+            this.removeOnlyFromHashmap(element, element.getPosition());
+            this.placeOnlyOnHashmap(element, futurePosition);
         }
     }
 
@@ -112,9 +142,16 @@ public class RectangularMap implements IWorldMap, IPositionChangeObserver {
         return false;
     }
 
+    public void run(){
+        for(Animal animal : animalList){
+            animal.move();
+        }
+        mapStateChanged();
+    }
+
     private void putOnTile(AbstractMapElement element, Vector2d position){ //adds element on tile
         if(!tilesOnMap.containsKey(position)) {
-            this.tilesOnMap.put(element.getPosition(), new LinkedList<AbstractMapElement>());
+            this.tilesOnMap.put(position, new LinkedList<AbstractMapElement>());
             this.freeTiles--;
         }
         this.tilesOnMap.get(position).add(element);
@@ -140,6 +177,17 @@ public class RectangularMap implements IWorldMap, IPositionChangeObserver {
         return vec;
     }
 
+    public void addObserver(IMapStateChangeObserver observer){
+        this.observers.add(observer);
+    }
 
+    public void removeObserver(IMapStateChangeObserver observer){
+        this.observers.remove(observer);
+    }
 
+    private void mapStateChanged() {
+        for (IMapStateChangeObserver observer : this.observers) {
+            observer.mapStateChanged();
+        }
+    }
 }

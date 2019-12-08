@@ -11,7 +11,8 @@ import main.mapElements.Vector2d;
  * @author apohllo
  */
 public interface IWorldMap {
-
+    Vector2d lowerBoundary();
+    Vector2d upperBoundary();
     /**
      * Place a car on the map.
      *

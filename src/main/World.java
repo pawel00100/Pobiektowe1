@@ -20,12 +20,12 @@ public class World {
 
             new UI(map, parameters);
 
-            new Run(map);
+            new Run(map, parameters);
 
             System.out.println("aaaa");
 
         }
-        catch (IOException exception){
+        catch (Exception exception){
             System.out.println(exception.getMessage());
         }
 

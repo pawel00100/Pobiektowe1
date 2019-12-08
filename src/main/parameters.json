@@ -1,6 +1,6 @@
 { 
     "width": 30,
     "height": 20,
-    "initialGrass": 10,
+    "initialGrass": 2,
     "initialAnimals": 3
 }

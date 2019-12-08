@@ -1,5 +1,6 @@
 package main.UI;
 
+import main.map.IMapStateChangeObserver;
 import main.mapElements.Animal;
 import main.mapElements.Grass;
 import main.map.RectangularMap;
@@ -8,7 +9,7 @@ import main.mapElements.Vector2d;
 import javax.swing.*;
 import java.awt.*;
 
-class MapPanel extends JPanel {
+class MapPanel extends JPanel implements IMapStateChangeObserver {
     private int widthInTiles;
     private int heightInTiles;
     private int tileSize;
@@ -21,6 +22,7 @@ class MapPanel extends JPanel {
     MapPanel(RectangularMap map) {
         super();
         this.map = map;
+        this.map.addObserver(this);
 
         //this section in code makes sure that each tile is square and neither width or height is above maxSize
         this.widthInTiles = this.map.upperBoundary.x - this.map.lowerBoundary.x + 1;
@@ -82,4 +84,10 @@ class MapPanel extends JPanel {
 //        G.fillRect(0, 0 , width, height);
     }
 
+
+    @Override
+    public void mapStateChanged() {
+        System.out.println("acknowledged map state change");
+        repaint();
+    }
 }

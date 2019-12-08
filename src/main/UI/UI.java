@@ -8,7 +8,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class UI {
-
+    MapPanel mapPanel;
     public UI(RectangularMap map, JSONObject parameters){
 //        JFrame.setDefaultLookAndFeelDecorated(true);
         try{UIManager.setLookAndFeel(
@@ -27,13 +27,17 @@ public class UI {
 
         SettingsPanel settingsPanel = new SettingsPanel(parameters);
         panel.add(settingsPanel);
-        MapPanel mapPanel = new MapPanel(map);
-        panel.add(mapPanel);
+        this.mapPanel = new MapPanel(map);
+        panel.add(this.mapPanel);
 
         frame.add(panel);
         frame.pack();
         frame.setVisible(true);
 
+    }
+
+    public void mapRefresh(){
+        //this.mapPanel
     }
 
 }

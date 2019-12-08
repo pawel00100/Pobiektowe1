@@ -1,7 +1,6 @@
 package main.mapElements;
 
 
-import main.map.IPositionChangeObserver;
 import main.map.IWorldMap;
 
 import java.util.LinkedList;
@@ -45,11 +44,17 @@ public class Animal extends AbstractMapElement{
         this.map.remove(this);
     }
 
+    public void move(){
+        generateDirection();
+        moveForward();
+    }
+
     public void moveForward(){
         this.energy -= 1;
         Vector2d futureVector = this.position.add(this.currentDirection.toUnitVector());
-            positionToBeChanged(this.position, futureVector);
-            this.position = futureVector;
+        futureVector = staysOnMap(futureVector);
+        positionToBeChangedTo(futureVector);
+        this.position = futureVector;
     }
 
     private void generateDirection(){
@@ -64,10 +69,23 @@ public class Animal extends AbstractMapElement{
         this.observers.remove(observer);
     }
 
-    private void positionToBeChanged(Vector2d oldPosition, Vector2d newPosition){
+    private void positionToBeChangedTo(Vector2d newPosition){
         for (IPositionChangeObserver observer : this.observers) {
-            observer.elementPositionToBeChanged(this, newPosition);
+            observer.elementPositionToBeChangedTo(this, newPosition);
         }
+    }
+
+    private Vector2d staysOnMap(Vector2d position){
+        if(position.x > this.map.upperBoundary().x)
+            position = position.subtract( new Vector2d(this.map.upperBoundary().x + 1, 0) );
+        if(position.y > this.map.upperBoundary().y)
+            position = position.subtract( new Vector2d(0, this.map.upperBoundary().y + 1) );
+        if(position.x < this.map.lowerBoundary().x)
+            position = position.add( new Vector2d(this.map.upperBoundary().x + 1, 0) );
+        if(position.y < this.map.lowerBoundary().y)
+            position = position.add( new Vector2d(0, this.map.upperBoundary().y + 1) );
+
+        return position;
     }
 
 }
