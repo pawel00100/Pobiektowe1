@@ -12,6 +12,8 @@ public class RectangularMap implements IWorldMap, IPositionChangeObserver {
     private List<Animal> animalList = new ArrayList<>();
     private Map<Vector2d, Tile> tilesOnMap = new LinkedHashMap<>(); //map contains lists with elements on each tile
     private int freeTiles;
+    public int numberOfAnimals = 0;
+    public int numberOfPlants = 0;
 
     public final Vector2d upperBoundary;
     public final Vector2d lowerBoundary = new Vector2d(0, 0);
@@ -64,7 +66,10 @@ public class RectangularMap implements IWorldMap, IPositionChangeObserver {
         if( element instanceof Animal) {
             ((Animal) element).addObserver(this);
             this.animalList.add((Animal) element);
+            this.numberOfAnimals++;
         }
+        if (element instanceof  Grass)
+            this.numberOfPlants++;
     }
 
     public void placeOnlyOnHashmap(AbstractMapElement element, Vector2d position){
@@ -75,17 +80,20 @@ public class RectangularMap implements IWorldMap, IPositionChangeObserver {
     }
 
     public void remove(AbstractMapElement element){
-        this.remove(element, element.getPosition());
+        this.removeFromForcedPosition(element, element.getPosition());
     }
 
-    public void remove(AbstractMapElement element, Vector2d position){ //removes from given position even if it contradicts instance's position
+    public void removeFromForcedPosition(AbstractMapElement element, Vector2d position){ //removes from given position even if it contradicts instance's position
         if(!isElementOnMap(element))
             throw new IllegalArgumentException("Trying to remove nonexistent element " + element);
-        removeFromTile(element, position);
         if( element instanceof Animal) {
             ((Animal) element).removeObserver(this);
             this.animalList.remove((Animal) element);
+            this.numberOfAnimals--;
         }
+        if (element instanceof Grass)
+            this.numberOfPlants--;
+        removeFromTile(element, position);
     }
 
     public void removeOnlyFromHashmap(AbstractMapElement element, Vector2d position){//doesn't affect animalList
@@ -145,8 +153,6 @@ public class RectangularMap implements IWorldMap, IPositionChangeObserver {
         animalList.forEach(Animal::move);
 
         tilesOnMap.values().forEach(Tile::eatAndReproduce);
-
-        mapStateChanged();
     }
 
     public void placePlants(){
@@ -155,12 +161,12 @@ public class RectangularMap implements IWorldMap, IPositionChangeObserver {
 
     private void placeSinglePlant(){
         if(freeTiles > 0)
-        place(new Grass(generateRandomUnoccupiedPosition()));
+        new Grass(this, generateRandomUnoccupiedPosition());
     }
 
     private void putOnTile(AbstractMapElement element, Vector2d position){ //adds element on tile
         if(!tilesOnMap.containsKey(position)) {
-            this.tilesOnMap.put(position, new Tile());
+            this.tilesOnMap.put(position, new Tile(this));
             this.freeTiles--;
         }
         this.tilesOnMap.get(position).putOnTile(element);
@@ -194,7 +200,7 @@ public class RectangularMap implements IWorldMap, IPositionChangeObserver {
         this.observers.remove(observer);
     }
 
-    private void mapStateChanged() {
+    public void mapStateChanged() {
         for (IMapStateChangeObserver observer : this.observers) {
             observer.mapStateChanged();
         }

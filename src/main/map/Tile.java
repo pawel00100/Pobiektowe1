@@ -32,6 +32,11 @@ public class Tile {
     List<AbstractMapElement> elementsOnTile = new LinkedList<>();
     int numberOfAnimals = 0;
     int numberOfElements = 0;
+    RectangularMap map;
+
+    public Tile(RectangularMap map){
+        this.map = map;
+    }
 
     public void eatAndReproduce(){
         if(numberOfAnimals >= 1 && isGrassOnTile()){
@@ -89,7 +94,7 @@ public class Tile {
     private void removeGrass(){
         for (AbstractMapElement element : elementsOnTile)
             if (element instanceof Grass){
-                removeFromTile(element);
+                this.map.remove(element);
                 return;
             }
     }

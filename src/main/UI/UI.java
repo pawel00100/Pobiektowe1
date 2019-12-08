@@ -25,10 +25,9 @@ public class UI {
 
         panel.setBorder(new EmptyBorder(new Insets(10,10,10,10)));
 
-        SettingsPanel settingsPanel = new SettingsPanel(parameters);
-        panel.add(settingsPanel);
-        this.mapPanel = new MapPanel(map);
-        panel.add(this.mapPanel);
+        panel.add(new SettingsPanel(parameters));
+        panel.add(new MapPanel(map));
+        panel.add(new StatusPanel(map));
 
         frame.add(panel);
         frame.pack();

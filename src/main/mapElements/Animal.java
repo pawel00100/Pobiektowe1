@@ -10,11 +10,10 @@ public class Animal extends AbstractMapElement{
     private MapDirection currentDirection = MapDirection.NORTH;
     private int energy = 100;
     private List<IPositionChangeObserver> observers = new LinkedList<>();
-    private IWorldMap map;
 
     public Animal(IWorldMap map, Vector2d position) {
+        super(map);
         this.position = position;
-        this.map = map;
         map.place(this);
     }
 
@@ -43,7 +42,7 @@ public class Animal extends AbstractMapElement{
     }
 
     public void appendEnergy(int energy){
-        this.energy += energy;
+        this.energy = Math.min(this.energy + energy, 100);
     }
 
     public void updateEnergy(){

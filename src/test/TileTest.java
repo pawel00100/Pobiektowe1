@@ -19,32 +19,18 @@ public class TileTest {
     @Before
     public void setUp() throws Exception {
         map = new RectangularMap(10,10);
-        tile = new Tile();
+        tile = new Tile(map);
         animal1 = new Animal(map);
         animal1a = new Animal(map);
         animal2 = new Animal(map, 3, 3);
         animal3 = new Animal(map, 4, 4);
-        grass1 = new Grass(new Vector2d(5,5));
+        grass1 = new Grass(map, new Vector2d(2,2));
     }
 
     @After
     public void tearDown() throws Exception {
     }
 
-    @Test
-    public void eatAndReproduce() {
-        this.tile.putOnTile(grass1);
-        this.tile.putOnTile(animal1);
-        this.tile.putOnTile(animal1a);
-        animal1.setEnergy(10);
-        animal1a.setEnergy(20);
-
-        assertTrue(this.tile.isGrassOnTile());
-        this.tile.eatAndReproduce();
-        assertFalse(this.tile.isGrassOnTile());
-        assertTrue(animal1.getEnergy() == 10);
-        assertTrue(animal1a.getEnergy() > 20);
-    }
 
     @Test
     public void putOnTile() {
@@ -59,6 +45,11 @@ public class TileTest {
         this.tile.putOnTile(animal1);
         assertFalse(this.tile.isEmpty());
         this.tile.removeFromTile(animal1);
+        assertTrue(this.tile.isEmpty());
+
+        this.tile.putOnTile(grass1);
+        assertFalse(this.tile.isEmpty());
+        this.tile.removeFromTile(grass1);
         assertTrue(this.tile.isEmpty());
     }
 
