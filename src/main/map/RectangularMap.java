@@ -151,8 +151,11 @@ public class RectangularMap implements IWorldMap, IPositionChangeObserver {
 
     public void run(){
         animalList.forEach(Animal::move);
+    }
 
-        tilesOnMap.values().forEach(Tile::eatAndReproduce);
+    public void eatAndReproduce(){
+        Map<Vector2d, Tile> newMap = new LinkedHashMap<>(this.tilesOnMap); //copy, because Map may be modified
+        newMap.values().forEach(Tile::eatAndReproduce);
     }
 
     public void placePlants(){
@@ -166,7 +169,7 @@ public class RectangularMap implements IWorldMap, IPositionChangeObserver {
 
     private void putOnTile(AbstractMapElement element, Vector2d position){ //adds element on tile
         if(!tilesOnMap.containsKey(position)) {
-            this.tilesOnMap.put(position, new Tile(this));
+            this.tilesOnMap.put(position, new Tile(this, position));
             this.freeTiles--;
         }
         this.tilesOnMap.get(position).putOnTile(element);

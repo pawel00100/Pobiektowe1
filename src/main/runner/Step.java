@@ -10,6 +10,7 @@ class Step {
 
         map.updateEnergies();
         map.run();
+        map.eatAndReproduce();
         map.placePlants();
         map.mapStateChanged();
 //        System.out.println(map);

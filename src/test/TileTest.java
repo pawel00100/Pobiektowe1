@@ -19,7 +19,7 @@ public class TileTest {
     @Before
     public void setUp() throws Exception {
         map = new RectangularMap(10,10);
-        tile = new Tile(map);
+        tile = new Tile(map, new Vector2d(2,2));
         animal1 = new Animal(map);
         animal1a = new Animal(map);
         animal2 = new Animal(map, 3, 3);

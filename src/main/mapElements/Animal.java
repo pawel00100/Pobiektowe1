@@ -13,7 +13,7 @@ public class Animal extends AbstractMapElement{
 
     public Animal(IWorldMap map, Vector2d position) {
         super(map);
-        this.position = position;
+        this.position = staysOnMap(position);
         map.place(this);
     }
 
@@ -38,17 +38,11 @@ public class Animal extends AbstractMapElement{
     }
 
     public void setEnergy(int energy){ //only for tests
-        this.energy = energy;
+        this.energy = Math.min(energy, 100);
     }
 
     public void appendEnergy(int energy){
         this.energy = Math.min(this.energy + energy, 100);
-    }
-
-    public void updateEnergy(){
-        this.energy--;
-        if(this.energy <= 0);
-        this.map.remove(this);
     }
 
     public void move(){
@@ -67,7 +61,7 @@ public class Animal extends AbstractMapElement{
 
 
     private void generateDirection(){
-        this.currentDirection = MapDirection.values()[(int)(8 * Math.random())];
+        this.currentDirection = MapDirection.generateRandomDirection();
     }
 
     public void addObserver(IPositionChangeObserver observer){

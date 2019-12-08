@@ -1,7 +1,6 @@
 package main.map;
 
 import main.mapElements.AbstractMapElement;
-import main.mapElements.MoveDirection;
 import main.mapElements.Vector2d;
 
 /**

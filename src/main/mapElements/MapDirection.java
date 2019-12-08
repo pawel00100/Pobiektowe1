@@ -49,5 +49,9 @@ public enum MapDirection {
         return this.vector;
     }
 
+    public static MapDirection generateRandomDirection(){
+        return MapDirection.values()[(int)(8 * Math.random())];
+    }
+
 
 }
