@@ -9,6 +9,7 @@ public class StatusPanel extends JPanel implements IMapStateChangeObserver {
     private JLabel animalsOnMapLabel;
     private JLabel plantsOnMapLabel;
     private RectangularMap map;
+
     StatusPanel(RectangularMap map){
         super();
         this.map = map;

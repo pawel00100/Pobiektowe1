@@ -16,14 +16,9 @@ public class World {
 
             RectangularMap map = new RectangularMap(parameters);
 
-//            System.out.println(map);
-
             new UI(map, parameters);
 
             new Run(map, parameters);
-
-            System.out.println("aaaa");
-
         }
         catch (Exception exception){
             System.out.println(exception.getMessage());

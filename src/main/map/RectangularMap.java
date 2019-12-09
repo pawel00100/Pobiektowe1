@@ -53,12 +53,6 @@ public class RectangularMap implements IWorldMap, IPositionChangeObserver {
     }
 
     @Override
-    public String toString() {
-        if (upperBoundary == null || lowerBoundary == null) return "no items";
-        return new MapVisualizer(this).draw(this.lowerBoundary, this.upperBoundary);
-    }
-
-    @Override
     public Vector2d lowerBoundary() {
         return this.lowerBoundary;
     }

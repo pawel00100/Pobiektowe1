@@ -47,8 +47,9 @@ public class Tile {
             removeGrass();
         }
 
-        if(this.numberOfAnimals >= 2){
+        if(this.numberOfAnimals >= 2 && ((Animal)(getElementsByEnergy().get(1))).getEnergy() >= 50) {
             spawnChild((Animal)(getElementsByEnergy().get(0)), (Animal)(getElementsByEnergy().get(1)));
+
         }
     }
 

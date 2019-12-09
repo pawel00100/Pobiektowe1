@@ -10,12 +10,20 @@ public class Animal extends AbstractMapElement{
     private MapDirection currentDirection = MapDirection.NORTH;
     private int energy = 100;
     private List<IPositionChangeObserver> observers = new LinkedList<>();
+    private Genome genome;
 
     public Animal(IWorldMap map, Vector2d position) {
         super(map);
         this.position = staysOnMap(position);
         map.place(this);
+        this.genome = new Genome();
     }
+
+    public Animal(IWorldMap map, Vector2d position, Animal parent1, Animal parent2){
+        this(map, position);
+        this.genome = new Genome(parent1.genome, parent2.genome);
+    }
+
 
     public Animal(IWorldMap map, int x, int y) {
         this(map, new Vector2d(x, y));
@@ -61,7 +69,9 @@ public class Animal extends AbstractMapElement{
 
 
     private void generateDirection(){
-        this.currentDirection = MapDirection.generateRandomDirection();
+        int geneNumber = (int) Math.floor(Math.random() * 32);
+        int directionNumber = this.genome.genes.get(geneNumber);
+        this.currentDirection = MapDirection.values()[directionNumber];
     }
 
     public void addObserver(IPositionChangeObserver observer){
