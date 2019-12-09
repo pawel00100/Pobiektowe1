@@ -1,6 +1,6 @@
 { 
     "width": 40,
     "height": 30,
-    "initialAnimals": 1,
+    "initialAnimals": 10,
     "jungleRatio" : 0.1
 }

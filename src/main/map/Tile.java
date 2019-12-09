@@ -110,7 +110,7 @@ public class Tile {
         parent2.appendEnergy(-energyTransfer2);
         int childEnergy = energyTransfer1 + energyTransfer2;
         Vector2d childPosition = this.tilePosition.add(MapDirection.generateRandomDirection().toUnitVector());
-        Animal child = new Animal(this.map, childPosition);
+        Animal child = new Animal(this.map, childPosition, parent1, parent2);
 //        Animal child = new Animal(this.map, this.tilePosition);
         child.setEnergy(childEnergy);
     }

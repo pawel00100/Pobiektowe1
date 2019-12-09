@@ -20,7 +20,7 @@ class SettingsPanel extends JPanel {
 
         JButton runButton=new JButton("run");
         JButton stopButton=new JButton("stop");
-        this.slider = new JSlider(1,100,50);
+        this.slider = new JSlider(0,100,33);
         this.label = new JLabel(sliderValue());
 
 
@@ -39,7 +39,7 @@ class SettingsPanel extends JPanel {
 
     private double sliderDoubleValue(){
         int input = this.slider.getValue(); //input 0 to 100
-        return Math.pow(10, ( (double) input / 50 - 1)); //logarithmic slider 0.1 to 10
+        return Math.pow(10, ( (double) input / 100.0 * 3 - 1)); //logarithmic slider 0.1 to 100
     }
 
     private String sliderValue(){
