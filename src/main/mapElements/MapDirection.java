@@ -53,5 +53,10 @@ public enum MapDirection {
         return MapDirection.values()[(int)(8 * Math.random())];
     }
 
+    public  MapDirection rotateBy(int rotations){
+        int newValue = (this.ordinal() + rotations) % 8;
+        return MapDirection.values()[newValue];
+    }
+
 
 }

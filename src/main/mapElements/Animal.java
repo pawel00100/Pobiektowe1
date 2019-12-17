@@ -41,6 +41,10 @@ public class Animal extends AbstractMapElement{
         return energy;
     }
 
+    public Genome getGenome(){
+        return this.genome;
+    }
+
     public MapDirection getDirection() {
         return this.currentDirection;
     }
@@ -70,8 +74,8 @@ public class Animal extends AbstractMapElement{
 
     private void generateDirection(){
         int geneNumber = (int) Math.floor(Math.random() * 32);
-        int directionNumber = this.genome.genes.get(geneNumber);
-        this.currentDirection = MapDirection.values()[directionNumber];
+        int rotationNumber = this.genome.genes.get(geneNumber);
+        this.currentDirection = this.currentDirection.rotateBy(rotationNumber);
     }
 
     public void addObserver(IPositionChangeObserver observer){

@@ -28,6 +28,7 @@ public class UI {
         panel.add(new SettingsPanel(parameters));
         panel.add(new MapPanel(map));
         panel.add(new StatusPanel(map));
+        panel.add(new GenomePanel(map));
 
         frame.add(panel);
         frame.pack();

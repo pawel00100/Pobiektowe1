@@ -67,7 +67,21 @@ public class RectangularMap implements IWorldMap, IPositionChangeObserver {
         placeOnForcedPosition(element, element.getPosition());
     }
 
-    public void placeOnForcedPosition(AbstractMapElement element, Vector2d position) { //places on given position even if it contradicts instance's position
+    @Override
+    public boolean isTileOccupied(Vector2d position) {
+        return tilesOnMap.containsKey(position);
+    }
+
+    @Override
+    public void elementPositionToBeChangedTo(AbstractMapElement element, Vector2d futurePosition) { //changes position of an element, asssumes calling method will change inner state
+        Vector2d currentPosition = element.getPosition();
+        if (futurePosition != null && !currentPosition.equals(futurePosition)) {
+            this.removeOnlyFromHashmap(element, element.getPosition());
+            this.placeOnlyOnHashmap(element, futurePosition);
+        }
+    }
+
+    private void placeOnForcedPosition(AbstractMapElement element, Vector2d position) { //places on given position even if it contradicts instance's position
         putOnTile(element, position);
         if (element instanceof Animal) {
             ((Animal) element).addObserver(this);
@@ -78,7 +92,7 @@ public class RectangularMap implements IWorldMap, IPositionChangeObserver {
             this.numberOfPlants++;
     }
 
-    public void placeOnlyOnHashmap(AbstractMapElement element, Vector2d position) {
+    private void placeOnlyOnHashmap(AbstractMapElement element, Vector2d position) {
         putOnTile(element, position);
         if (element instanceof Animal) {
             ((Animal) element).addObserver(this);
@@ -89,7 +103,7 @@ public class RectangularMap implements IWorldMap, IPositionChangeObserver {
         this.removeFromForcedPosition(element, element.getPosition());
     }
 
-    public void removeFromForcedPosition(AbstractMapElement element, Vector2d position) { //removes from given position even if it contradicts instance's position
+    private void removeFromForcedPosition(AbstractMapElement element, Vector2d position) { //removes from given position even if it contradicts instance's position
         if (!isElementOnMap(element))
             throw new IllegalArgumentException("Trying to remove nonexistent element " + element);
         if (element instanceof Animal) {
@@ -102,27 +116,12 @@ public class RectangularMap implements IWorldMap, IPositionChangeObserver {
         removeFromTile(element, position);
     }
 
-    public void removeOnlyFromHashmap(AbstractMapElement element, Vector2d position) {//doesn't affect animalList
+    private void removeOnlyFromHashmap(AbstractMapElement element, Vector2d position) {//doesn't affect animalList
         if (!isElementOnMap(element))
             throw new IllegalArgumentException("Trying to remove nonexistent element " + element);
         removeFromTile(element, position);
         if (element instanceof Animal) {
             ((Animal) element).removeObserver(this);
-        }
-    }
-
-    @Override
-    public boolean isTileOccupied(Vector2d position) {
-        return tilesOnMap.containsKey(position);
-    }
-
-
-    @Override
-    public void elementPositionToBeChangedTo(AbstractMapElement element, Vector2d futurePosition) { //changes position of an element, asssumes calling method will change inner state
-        Vector2d currentPosition = element.getPosition();
-        if (futurePosition != null && !currentPosition.equals(futurePosition)) {
-            this.removeOnlyFromHashmap(element, element.getPosition());
-            this.placeOnlyOnHashmap(element, futurePosition);
         }
     }
 
@@ -132,6 +131,10 @@ public class RectangularMap implements IWorldMap, IPositionChangeObserver {
             return tilesOnMap.get(position).isElementOnTile(element);
 
         return false;
+    }
+
+    public Animal getAnimalByNumber(int num){
+        return this.animalList.get(num);
     }
 
     public boolean isAnimalOnTile(Vector2d position) {
@@ -174,7 +177,6 @@ public class RectangularMap implements IWorldMap, IPositionChangeObserver {
             new Grass(this,generateRandomPositionWithException(this.lowerBoundary, this.upperBoundary, this.lowerJungleBoundary, this.upperJungleBoundary));
         }
     }
-
 
     private void putOnTile(AbstractMapElement element, Vector2d position) { //adds element on tile
         if (!tilesOnMap.containsKey(position)) {

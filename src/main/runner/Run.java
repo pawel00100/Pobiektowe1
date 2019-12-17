@@ -11,7 +11,8 @@ public class Run {
         while (true) {
             if ((boolean) parameters.get("isRunning")) {
                 int stepSize = ((double) parameters.get("runSpeed") > 50) ? 5 : 1;
-                new Step(map, stepSize, i);
+
+                step(map, stepSize, i);
 
                 while (System.currentTimeMillis() - (long) (250.0 / (double) parameters.get("runSpeed")) < lastStepTIme) {
                     Thread.sleep(10);
@@ -26,5 +27,18 @@ public class Run {
         }
 
     }
+
+    private void step(RectangularMap map, int stepSize, int step){
+        for (int i = 0; i < stepSize; i++) {
+            map.updateEnergies();
+            map.run();
+            map.eatAndReproduce();
+            map.placePlants();
+        }
+        System.out.println(step);
+        map.mapStateChanged();
+    }
+
+
 
 }

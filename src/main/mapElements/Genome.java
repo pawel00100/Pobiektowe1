@@ -1,5 +1,9 @@
 package main.mapElements;
 
+/*TODO:
+*  split method returning 2-element array
+*  fight repetitions */
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,32 +21,29 @@ public class Genome {
     }
 
     public Genome(){
-//        genome = new int[] {0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6,6,7,7,7,7};
-        ArrayList<Integer> genome = new ArrayList<>() ;
+        ArrayList<Integer> genes = new ArrayList<>() ;
 
         for (int i = 0; i < 8; i++)
-            genome.add(i);
+            genes.add(i);
         for (int i = 0; i < 24; i++)
-            genome.add(randomGene());
+            genes.add(randomGene());
 
-        genome.sort(Integer::compareTo);
-        this.genes = genome;
+        genes.sort(Integer::compareTo);
+        this.genes = genes;
+    }
+
+    public Genome(List<Integer> genes){
+        this.genes = genes;
+        addMissingGenes(this.genes);
     }
 
     public Genome(Genome parent1, Genome parent2) {
-        int split1 = (int) Math.floor(Math.random() * 31) + 1;
-        int split2;
-        do {
-            split2 = (int) Math.floor(Math.random() * 31) + 1;
-        }
-        while (split1 == split2);
-        if (split1 > split2) {
-            int x = split1;
-            split1 = split2;
-            split2 = x;
-        }
+        int[] splitIndicies = generateSplitIndices();
 
-        ArrayList<Integer> genome = new ArrayList<>() ;
+        int splitIndex1 = splitIndicies[0];
+        int splitIndex2 = splitIndicies[1];
+
+        ArrayList<Integer> genome = new ArrayList<>();
 
         Genome singleDonor;
         Genome doubleDonor;
@@ -56,10 +57,11 @@ public class Genome {
         }
 
         int singleDonorFragmentNum = generateDonorFragmentNum();
-        genome.addAll(donorFragment(singleDonor.genes, singleDonorFragmentNum, split1, split2));
-        genome.addAll(nonDonorFragment(doubleDonor.genes, singleDonorFragmentNum, split1, split2));
+        genome.addAll(donorFragment(singleDonor.genes, singleDonorFragmentNum, splitIndex1, splitIndex2));
+        genome.addAll(nonDonorFragment(doubleDonor.genes, singleDonorFragmentNum, splitIndex1, splitIndex2));
 
         genome.sort(Integer::compareTo);
+        addMissingGenes(genome);
         this.genes = genome;
     }
 
@@ -72,39 +74,60 @@ public class Genome {
     return string;
     }
 
+    public int getGene(int num){
+        return this.genes.get(num);
+    }
 
     private int randomGene(){
         return (int) Math.floor(Math.random() * 8);
     }
 
-
+    private int randomPos(){
+        return (int) Math.floor(Math.random() * 32);
+    }
 
     private boolean isFirstSingleDonor(){
         return Math.random() < 0.5;
     }
 
-    private List<Integer> donorFragment(List<Integer> parent, int num, int split1, int split2){
-        if(num == 0)
-            return  parent.subList(0, split1);
-        else if (num == 1)
-            return  parent.subList(split1, split2);
-        else
-            return  parent.subList(split2, 32);
+    private int[] generateSplitIndices(){
+        int splitIndex1 = (int) Math.floor(Math.random() * 31) + 1;
+        int splitIndex2;
+        do {
+            splitIndex2 = (int) Math.floor(Math.random() * 31) + 1;
+        }
+        while (splitIndex1 == splitIndex2);
+
+        if (splitIndex1 > splitIndex2) {
+            int x = splitIndex1;
+            splitIndex1 = splitIndex2;
+            splitIndex2 = x;
+        }
+        return new int[] {splitIndex1, splitIndex2};
     }
 
-    private List<Integer> nonDonorFragment(List<Integer> parent, int num, int split1, int split2){
+    private List<Integer> donorFragment(List<Integer> parent, int chosenFragment, int splitIndex1, int splitIndex2){
+        if(chosenFragment == 0)
+            return  parent.subList(0, splitIndex1);
+        else if (chosenFragment == 1)
+            return  parent.subList(splitIndex1, splitIndex2);
+        else
+            return  parent.subList(splitIndex2, 32);
+    }
+
+    private List<Integer> nonDonorFragment(List<Integer> parent, int nonChosenFragment, int splitIndex1, int splitIndex2){
        List<Integer> newList = new ArrayList<>();
-        if(num == 0){
-            newList.addAll(donorFragment(parent, 1, split1, split2));
-            newList.addAll(donorFragment(parent, 2, split1, split2));
+        if(nonChosenFragment == 0){
+            newList.addAll(donorFragment(parent, 1, splitIndex1, splitIndex2));
+            newList.addAll(donorFragment(parent, 2, splitIndex1, splitIndex2));
         }
-        else if (num == 1){
-            newList.addAll(donorFragment(parent, 0, split1, split2));
-            newList.addAll(donorFragment(parent, 2, split1, split2));
+        else if (nonChosenFragment == 1){
+            newList.addAll(donorFragment(parent, 0, splitIndex1, splitIndex2));
+            newList.addAll(donorFragment(parent, 2, splitIndex1, splitIndex2));
         }
         else{
-            newList.addAll(donorFragment(parent, 0, split1, split2));
-            newList.addAll(donorFragment(parent, 1, split1, split2));
+            newList.addAll(donorFragment(parent, 0, splitIndex1, splitIndex2));
+            newList.addAll(donorFragment(parent, 1, splitIndex1, splitIndex2));
         }
 
         return newList;
@@ -113,4 +136,35 @@ public class Genome {
     private int generateDonorFragmentNum(){
         return  (int) Math.floor(Math.random() * 3);
     }
+
+    private void addMissingGenes(List<Integer> genes){
+        while(firstMissingGene(genes) != -1){
+            genes.set(randomPos(), firstMissingGene(genes));
+            genes.sort(Integer::compareTo);
+        }
+    }
+
+    private int firstMissingGene(List<Integer> genes){
+        if(genes.get(0) != 0)
+            return 0;
+        int firstPosition = 0;
+        while(firstPosition < 31){
+            if(genes.get(firstPosition+1) - genes.get(firstPosition) > 1)
+                return genes.get(firstPosition) + 1;
+            firstPosition++;
+        }
+        if (genes.get(31) != 7)
+            return 7;
+        return -1;
+    }
+
+    @Override
+    public boolean equals(Object genome2){
+        if(genes.equals(genome2))
+            return true;
+        if(!(genome2 instanceof Genome))
+            return false;
+        return this.genes.equals(((Genome) genome2).genes);
+    }
+
 }
