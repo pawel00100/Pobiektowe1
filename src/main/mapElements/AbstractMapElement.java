@@ -1,13 +1,13 @@
 package main.mapElements;
 
 
-import main.map.IWorldMap;
+import main.map.RectangularMap;
 
 public abstract class AbstractMapElement {
     Vector2d position;
-    IWorldMap map;
+    RectangularMap map;
 
-    AbstractMapElement(IWorldMap map){
+    AbstractMapElement(RectangularMap map){
         this.map = map;
     }
 

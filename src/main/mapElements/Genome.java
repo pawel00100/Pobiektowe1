@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Genome {
-    public final List<Integer> genes;
+    private final List<Integer> genes;
 
     public static void main(String[] args){
         System.out.println("aa");
@@ -20,7 +20,7 @@ public class Genome {
         System.out.println(cc);
     }
 
-    public Genome(){
+    public Genome(){ //generates random genome
         ArrayList<Integer> genes = new ArrayList<>() ;
 
         for (int i = 0; i < 8; i++)
@@ -74,6 +74,15 @@ public class Genome {
     return string;
     }
 
+    @Override
+    public boolean equals(Object genome2){
+        if(genes.equals(genome2))
+            return true;
+        if(!(genome2 instanceof Genome))
+            return false;
+        return this.genes.equals(((Genome) genome2).genes);
+    }
+
     public int getGene(int num){
         return this.genes.get(num);
     }
@@ -117,18 +126,25 @@ public class Genome {
 
     private List<Integer> nonDonorFragment(List<Integer> parent, int nonChosenFragment, int splitIndex1, int splitIndex2){
        List<Integer> newList = new ArrayList<>();
+
+       int chosenFragment1;
+       int chosenFragment2;
+
         if(nonChosenFragment == 0){
-            newList.addAll(donorFragment(parent, 1, splitIndex1, splitIndex2));
-            newList.addAll(donorFragment(parent, 2, splitIndex1, splitIndex2));
+            chosenFragment1 = 1;
+            chosenFragment2 = 2;
         }
         else if (nonChosenFragment == 1){
-            newList.addAll(donorFragment(parent, 0, splitIndex1, splitIndex2));
-            newList.addAll(donorFragment(parent, 2, splitIndex1, splitIndex2));
+            chosenFragment1 = 0;
+            chosenFragment2 = 2;
         }
-        else{
-            newList.addAll(donorFragment(parent, 0, splitIndex1, splitIndex2));
-            newList.addAll(donorFragment(parent, 1, splitIndex1, splitIndex2));
+        else {
+            chosenFragment1 = 0;
+            chosenFragment2 = 1;
         }
+
+        newList.addAll(donorFragment(parent, chosenFragment1, splitIndex1, splitIndex2));
+        newList.addAll(donorFragment(parent, chosenFragment2, splitIndex1, splitIndex2));
 
         return newList;
     }
@@ -156,15 +172,6 @@ public class Genome {
         if (genes.get(31) != 7)
             return 7;
         return -1;
-    }
-
-    @Override
-    public boolean equals(Object genome2){
-        if(genes.equals(genome2))
-            return true;
-        if(!(genome2 instanceof Genome))
-            return false;
-        return this.genes.equals(((Genome) genome2).genes);
     }
 
 }

@@ -1,11 +1,11 @@
 package main.mapElements;
 
-import main.map.IWorldMap;
+import main.map.RectangularMap;
 
 public class Grass extends AbstractMapElement{
 
 
-    public Grass(IWorldMap map, Vector2d position) {
+    public Grass(RectangularMap map, Vector2d position) {
         super(map);
         this.position = position;
         map.place(this);

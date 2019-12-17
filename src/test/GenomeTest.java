@@ -64,12 +64,6 @@ public class GenomeTest {
         assertEquals(7, genome1.getGene(31));
     }
 
-//    @Test
-//    public void donorFragment(){
-//        List<Integer> expectedList = new ArrayList<>(Arrays.asList(5,5,6,6,6));
-////22.27
-//        assertEquals(expectedList, this.genome1.donorFragment(this.genes1,1,22,27));
-//    }
 
     @Test
     public void addMissingGenes(){

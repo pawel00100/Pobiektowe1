@@ -1,8 +1,6 @@
 package main.UI;
 
 import main.map.IMapStateChangeObserver;
-import main.mapElements.Animal;
-import main.mapElements.Grass;
 import main.map.RectangularMap;
 import main.mapElements.Vector2d;
 
@@ -66,7 +64,7 @@ class MapPanel extends JPanel implements IMapStateChangeObserver {
             else
                 color = Color.RED;
         }
-        else if(this.map.isJungle(tilePosition)){
+        else if(this.map.isTileJungle(tilePosition)){
             if ((tilePosition.x + tilePosition.y) % 2 == 0)
                 color = this.jungle1;
             else

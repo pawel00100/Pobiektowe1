@@ -1,7 +1,7 @@
 package main.mapElements;
 
 
-import main.map.IWorldMap;
+import main.map.RectangularMap;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -12,24 +12,24 @@ public class Animal extends AbstractMapElement{
     private List<IPositionChangeObserver> observers = new LinkedList<>();
     private Genome genome;
 
-    public Animal(IWorldMap map, Vector2d position) {
+    public Animal(RectangularMap map, Vector2d position) {
         super(map);
         this.position = staysOnMap(position);
         map.place(this);
         this.genome = new Genome();
     }
 
-    public Animal(IWorldMap map, Vector2d position, Animal parent1, Animal parent2){
+    public Animal(RectangularMap map, Vector2d position, Animal parent1, Animal parent2){
         this(map, position);
         this.genome = new Genome(parent1.genome, parent2.genome);
     }
 
 
-    public Animal(IWorldMap map, int x, int y) {
+    public Animal(RectangularMap map, int x, int y) {
         this(map, new Vector2d(x, y));
     }
 
-    public Animal(IWorldMap map) {
+    public Animal(RectangularMap map) {
         this(map, 2, 2);
     }
 
@@ -74,7 +74,7 @@ public class Animal extends AbstractMapElement{
 
     private void generateDirection(){
         int geneNumber = (int) Math.floor(Math.random() * 32);
-        int rotationNumber = this.genome.genes.get(geneNumber);
+        int rotationNumber = this.genome.getGene(geneNumber);
         this.currentDirection = this.currentDirection.rotateBy(rotationNumber);
     }
 
@@ -93,14 +93,14 @@ public class Animal extends AbstractMapElement{
     }
 
     private Vector2d staysOnMap(Vector2d position){
-        if(position.x > this.map.upperBoundary().x)
-            position = position.subtract( new Vector2d(this.map.upperBoundary().x + 1, 0) );
-        if(position.y > this.map.upperBoundary().y)
-            position = position.subtract( new Vector2d(0, this.map.upperBoundary().y + 1) );
-        if(position.x < this.map.lowerBoundary().x)
-            position = position.add( new Vector2d(this.map.upperBoundary().x + 1, 0) );
-        if(position.y < this.map.lowerBoundary().y)
-            position = position.add( new Vector2d(0, this.map.upperBoundary().y + 1) );
+        if(position.x > this.map.upperBoundary.x)
+            position = position.subtract( new Vector2d(this.map.upperBoundary.x + 1, 0) );
+        if(position.y > this.map.upperBoundary.y)
+            position = position.subtract( new Vector2d(0, this.map.upperBoundary.y + 1) );
+        if(position.x < this.map.lowerBoundary.x)
+            position = position.add( new Vector2d(this.map.upperBoundary.x + 1, 0) );
+        if(position.y < this.map.lowerBoundary.y)
+            position = position.add( new Vector2d(0, this.map.upperBoundary.y + 1) );
 
         return position;
     }
