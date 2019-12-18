@@ -9,35 +9,25 @@ import org.json.JSONObject;
 import java.util.*;
 
 public class RectangularMap implements IPositionChangeObserver {
-    private JSONObject parameters;
-
-    private List<Animal> animalList = new ArrayList<>();
-    private Map<Vector2d, Tile> tilesOnMap = new LinkedHashMap<>(); //map contains lists with elements on each tile
-    private int freeTiles;  //i have no idea what im doing
-    public int numberOfAnimals = 0;
-    public int numberOfPlants = 0;
-
     public final Vector2d upperBoundary;
     public final Vector2d lowerBoundary = new Vector2d(0, 0);
-    private final Vector2d lowerJungleBoundary;
-    private  final Vector2d upperJungleBoundary;
+
+    private JSONObject parameters;
+
+    private List<Animal> animalList = new ArrayList<>(); //separate list of animals allows to skip iterating over grass tiles
+    private Map<Vector2d, Tile> tilesOnMap = new LinkedHashMap<>();
+    private int freeTiles;  //i have no idea what im doing
+    private int numberOfAnimals = 0;
+    private int numberOfPlants = 0;
+    private Vector2d lowerJungleBoundary;
+    private Vector2d upperJungleBoundary;
 
     private List<IMapStateChangeObserver> observers = new LinkedList<>();
 
     public RectangularMap(int x, int y, int initialAnimals, double jungleRatio) {
         this.upperBoundary = new Vector2d(x, y);
 
-        int uxupper = (this.upperBoundary.x - this.lowerBoundary.x) / 2 + (int) Math.ceil(Math.sqrt(jungleRatio) * (this.upperBoundary.x - this.lowerBoundary.x) / 2);
-        int uxlower = (this.upperBoundary.x - this.lowerBoundary.x) / 2 - (int) Math.ceil(Math.sqrt(jungleRatio) * (this.upperBoundary.x - this.lowerBoundary.x) / 2);
-
-        int uyupper = (this.upperBoundary.y - this.lowerBoundary.y) / 2 + (int) Math.ceil(Math.sqrt(jungleRatio) * (this.upperBoundary.y - this.lowerBoundary.y) / 2);
-        int uylower = (this.upperBoundary.y - this.lowerBoundary.y) / 2 - (int) Math.ceil(Math.sqrt(jungleRatio) * (this.upperBoundary.y - this.lowerBoundary.y) / 2);
-
-        this.upperJungleBoundary = new Vector2d(uxupper, uyupper);
-        this.lowerJungleBoundary = new Vector2d(uxlower, uylower);
-
-        this.freeTiles = (this.upperBoundary.x - this.lowerBoundary.x + 1) * (this.upperBoundary.y - this.lowerBoundary.y + 1);
-
+        calculateMapParameters(jungleRatio);
 
         for (int i = 0; i < initialAnimals && freeTiles > 0; i++)
             new Animal(this, generateRandomUnoccupiedPosition(this.lowerBoundary, this.upperBoundary));
@@ -50,6 +40,14 @@ public class RectangularMap implements IPositionChangeObserver {
     public RectangularMap(JSONObject parameters) {
         this(parameters.getInt("width") - 1, parameters.getInt("height") - 1, parameters.getInt("initialAnimals"), parameters.getDouble("jungleRatio"));
         this.parameters = parameters;
+    }
+
+    public int getNumberOfAnimals(){
+        return this.numberOfAnimals;
+    }
+
+    public int getNumberOfPlants(){
+        return this.numberOfPlants;
     }
 
     public void place(AbstractMapElement element) { //adds element on map, assumes it can be placed
@@ -139,6 +137,32 @@ public class RectangularMap implements IPositionChangeObserver {
         }
     }
 
+    private void calculateMapParameters(double jungleRatio){
+        this.upperJungleBoundary = calculateJungleBoundaries(jungleRatio, true);
+        this.lowerJungleBoundary = calculateJungleBoundaries(jungleRatio, false);
+
+        this.freeTiles = (this.upperBoundary.x - this.lowerBoundary.x + 1) * (this.upperBoundary.y - this.lowerBoundary.y + 1);
+    }
+
+    private Vector2d calculateJungleBoundaries(double jungleRatio, boolean calculateUpper) { //by default calculates lower
+        int lowerBoundary = calulateJungleBoundary(jungleRatio, this.upperBoundary.x, this.lowerBoundary.x, calculateUpper);
+        int upperBoundary = calulateJungleBoundary(jungleRatio, this.upperBoundary.y, this.lowerBoundary.y, calculateUpper);
+
+        return new Vector2d(lowerBoundary, upperBoundary);
+    }
+
+    private int calulateJungleBoundary(double jungleRatio, int upperBoundary, int lowerBoundary, boolean calculateUpper){
+        int boundaryCenter = (upperBoundary - lowerBoundary) / 2;
+        int boundaryOffset = (int) Math.ceil(Math.sqrt(jungleRatio) * (upperBoundary - lowerBoundary) / 2);
+        int boundary;
+        if (calculateUpper)
+            boundary = boundaryCenter + boundaryOffset;
+        else
+            boundary = boundaryCenter - boundaryOffset;
+
+        return boundary;
+    }
+
     private void placeOnForcedPosition(AbstractMapElement element, Vector2d position) { //places on given position even if it contradicts instance's position
         putOnTile(element, position);
         if (element instanceof Animal) {
@@ -156,7 +180,6 @@ public class RectangularMap implements IPositionChangeObserver {
             ((Animal) element).addObserver(this);
         }
     }
-
 
     private void removeFromForcedPosition(AbstractMapElement element, Vector2d position) { //removes from given position even if it contradicts instance's position
         if (!isElementOnMap(element))

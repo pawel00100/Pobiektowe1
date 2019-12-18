@@ -23,7 +23,7 @@ public class StatusPanel extends JPanel implements IMapStateChangeObserver {
 
     @Override
     public void mapStateChanged() {
-        this.animalsOnMapLabel.setText("Animals: " + this.map.numberOfAnimals);
-        this.plantsOnMapLabel.setText("       Plants: " + this.map.numberOfPlants);
+        this.animalsOnMapLabel.setText("Animals: " + this.map.getNumberOfAnimals());
+        this.plantsOnMapLabel.setText("       Plants: " + this.map.getNumberOfPlants());
     }
 }
