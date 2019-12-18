@@ -5,6 +5,7 @@ import org.json.JSONObject;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 class SettingsPanel extends JPanel {
     private JSONObject parameters;
@@ -20,6 +21,14 @@ class SettingsPanel extends JPanel {
 
         JButton runButton=new JButton("run");
         JButton stopButton=new JButton("stop");
+        JButton thirdButton=new JButton("");
+        thirdButton.setPreferredSize(new Dimension(10,10));
+        thirdButton.setBorder(null);
+        thirdButton.setBorderPainted(false);
+        thirdButton.setContentAreaFilled(false);
+        thirdButton.addActionListener(e -> System.out.println("clocked"));
+
+
         this.slider = new JSlider(0,100,33);
         this.label = new JLabel(sliderValue());
 
@@ -32,6 +41,7 @@ class SettingsPanel extends JPanel {
 
         this.add(runButton);
         this.add(stopButton);
+        this.add(thirdButton);
         this.add(this.slider);
         this.add(this.label);
         this.setPreferredSize(new Dimension(300,50));
@@ -51,6 +61,15 @@ class SettingsPanel extends JPanel {
         this.label.setText( sliderValue());
         this.parameters.put("runSpeed", sliderDoubleValue());
     }
+
+    private static ImageIcon createImageIcon(Color color, int width, int height) {
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        Graphics2D graphics = image.createGraphics();
+        graphics.setPaint(color);
+        graphics.fillRect (0, 0, width, height);
+        return new ImageIcon(image);
+    }
+
 
 
 }

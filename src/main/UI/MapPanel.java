@@ -6,6 +6,8 @@ import main.mapElements.Vector2d;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 class MapPanel extends JPanel implements IMapStateChangeObserver {
     private int widthInTiles;
@@ -18,6 +20,9 @@ class MapPanel extends JPanel implements IMapStateChangeObserver {
     private Color animalColor = Color.DARK_GRAY;
     private Color grassColor = new Color(2, 172, 24);
     private RectangularMap map;
+
+    RepaintManager r = new RepaintManager();
+    private ArrayList<ArrayList<JButton>> buttons = new ArrayList<>();
 
     MapPanel(RectangularMap map) {
         super();
@@ -39,8 +44,28 @@ class MapPanel extends JPanel implements IMapStateChangeObserver {
         int height = this.heightInTiles * this.tileSize;
         this.setPreferredSize(new Dimension(width, height));
 
-//        repaint();
+        GridLayout grid = new GridLayout(this.heightInTiles, this.widthInTiles);
+        this.setLayout(grid);
 
+        createButtons();
+        repaint();
+
+    }
+
+    private void createButtons(){
+        for (int i = 0; i < this.heightInTiles; i++){
+            this.buttons.add(new ArrayList<JButton>());
+            for (int j = 0; j < this.widthInTiles; j++) {
+                JButton b = new JButton();
+                b.setPreferredSize(new Dimension(this.tileSize,this.tileSize));
+                b.setBorder(null);
+                b.setBorderPainted(false);
+                b.setContentAreaFilled(false);
+                b.addActionListener(e -> System.out.println("clocked"));
+                this.buttons.get(i).add(b);
+                this.add(b);
+            }
+        }
     }
 
     private void drawMap(Graphics gAbstract) {
@@ -92,7 +117,6 @@ class MapPanel extends JPanel implements IMapStateChangeObserver {
         drawMap(G);
 //        G.fillRect(0, 0 , width, height);
     }
-
 
     @Override
     public void mapStateChanged() {

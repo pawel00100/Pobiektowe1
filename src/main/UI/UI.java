@@ -11,9 +11,9 @@ public class UI {
     MapPanel mapPanel;
     public UI(RectangularMap map, JSONObject parameters){
 //        JFrame.setDefaultLookAndFeelDecorated(true);
-        try{UIManager.setLookAndFeel(
-                UIManager.getSystemLookAndFeelClassName());}
-        catch (Exception e){};
+//        try{UIManager.setLookAndFeel(
+//                UIManager.getSystemLookAndFeelClassName());}
+//        catch (Exception e){};
 
         JFrame frame = new JFrame("Animal World");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
