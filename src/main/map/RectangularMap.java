@@ -8,12 +8,13 @@ import org.json.JSONObject;
 
 import java.util.*;
 
-public class RectangularMap implements IPositionChangeObserver, IAnimalEnergyChangeObserver
+public class RectangularMap implements IPositionChangeObserver
 {
     public final Vector2d upperBoundary;
     public final Vector2d lowerBoundary = new Vector2d(0, 0);
     public Animal chosenAnimal = null;
-    public boolean isChosenAnimalAlive = false;
+    public boolean isChosenAnimalAlive = false; //not sure if needed
+    public int epochOfDeath = 0;
 
     private JSONObject parameters;
 
@@ -26,6 +27,8 @@ public class RectangularMap implements IPositionChangeObserver, IAnimalEnergyCha
     private int totalEnergy = 0;
     private int totalLifespanAtDeath = 0;
     private int deadAnimals = 0;
+    private int numberOfChildrenOfAliveAnimals = 0;
+
     private Vector2d lowerJungleBoundary;
     private Vector2d upperJungleBoundary;
 
@@ -70,6 +73,14 @@ public class RectangularMap implements IPositionChangeObserver, IAnimalEnergyCha
             return 0;
         return this.totalLifespanAtDeath / this.deadAnimals;
     }
+
+    public double getAverageNumberOfChildren(){
+        return (double) this.numberOfChildrenOfAliveAnimals / this.numberOfAnimals;
+    }
+
+//    public int getEpochOfDeath(){
+//        return this.epochOfDeath;
+//    }
 
     public void place(AbstractMapElement element) { //adds element on map, assumes it can be placed
         placeOnForcedPosition(element, element.getPosition());
@@ -217,13 +228,17 @@ public class RectangularMap implements IPositionChangeObserver, IAnimalEnergyCha
         if (!isElementOnMap(element))
             throw new IllegalArgumentException("Trying to remove nonexistent element " + element);
         if (element instanceof Animal) {
-            ((Animal) element).removeObserver(this);
-            this.animalList.remove((Animal) element);
+            Animal animal = ((Animal) element);
+            animal.removeObserver(this);
+            this.animalList.remove(animal);
             this.numberOfAnimals--;
-            if(this.chosenAnimal == (Animal) element)
+            if(this.chosenAnimal == animal){
                 this.isChosenAnimalAlive = false;
-            this.totalLifespanAtDeath += ((Animal) element).getLifespan();
+                this.epochOfDeath = this.epoch;
+            }
+            this.totalLifespanAtDeath += (animal).getLifespan();
             this.deadAnimals++;
+            animal.onDeath();
         }
         if (element instanceof Grass)
             this.numberOfPlants--;
@@ -278,8 +293,11 @@ public class RectangularMap implements IPositionChangeObserver, IAnimalEnergyCha
         return vec;
     }
 
-    @Override
-    public void animalEnergyChanged(Animal animal, int energyChange) {
+    public void animalEnergyChanged(int energyChange) {
         this.totalEnergy += energyChange;
+    }
+
+    public void animalNumberOfChildrenChanged(int numberOfChildrenChange) {
+        this.numberOfChildrenOfAliveAnimals += numberOfChildrenChange;
     }
 }

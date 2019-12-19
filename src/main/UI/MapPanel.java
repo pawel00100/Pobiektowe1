@@ -94,7 +94,7 @@ class MapPanel extends JPanel implements IMapStateChangeObserver {
     private void drawObject(Graphics2D g, Vector2d tilePosition) {
         Color color;
         if(map.isTileOccupied(tilePosition)){
-            if(this.map.chosenAnimal != null && tilePosition.equals(this.map.chosenAnimal.getPosition()))
+            if(this.map.chosenAnimal != null && this.map.isChosenAnimalAlive && tilePosition.equals(this.map.chosenAnimal.getPosition()))
                 color = this.chosenAnimalColor;
             else if (map.isAnimalOnTile(tilePosition))
                 color = animalColor;
@@ -133,7 +133,9 @@ class MapPanel extends JPanel implements IMapStateChangeObserver {
             return;
         }
         Animal chosenAnimal = (Animal) this.map.getTile(mapPosition).getElementsByEnergy().get(0);
+        chosenAnimal.setTracked();
         this.map.chosenAnimal = chosenAnimal;
+        this.map.epochOfDeath = 0;
         this.map.isChosenAnimalAlive = true;
 
         mapStateChanged();

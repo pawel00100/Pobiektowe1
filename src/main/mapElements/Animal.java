@@ -3,8 +3,7 @@ package main.mapElements;
 
 import main.map.RectangularMap;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class Animal extends AbstractMapElement{
     private MapDirection currentDirection = MapDirection.NORTH;
@@ -12,7 +11,16 @@ public class Animal extends AbstractMapElement{
     private int lifespan = 0;
     private List<IPositionChangeObserver> positionChangeObservers = new LinkedList<>();
     private List<IAnimalEnergyChangeObserver> energyChangeObservers = new LinkedList<>();
+    private List<IAnimalNumberOfChildrenChangeObserver> numberOfChildrenChangeObservers = new LinkedList<>();
     private Genome genome;
+
+    private Animal greatestAncestor = null;
+//    private Set<Animal> children = new HashSet<>();
+//    private Set<Animal> descendants = new HashSet<>();
+    private int numberOfChildren = 0;
+    private int numberOfChildrenSinceChoosing = 0;
+    private ArrayList<Animal> childrenOfChosenAnimal = new ArrayList<>();
+    private ArrayList<Animal> descendantsOfChosenAnimal = new ArrayList<>();
 
     public Animal(RectangularMap map, Vector2d position) {
         super(map);
@@ -25,8 +33,32 @@ public class Animal extends AbstractMapElement{
     public Animal(RectangularMap map, Vector2d position, Animal parent1, Animal parent2){
         this(map, position);
         this.genome = new Genome(parent1.genome, parent2.genome);
+
+        parent1.changeNumberOfChildren(1);
+        parent2.changeNumberOfChildren(1);
+        parent1.numberOfChildrenSinceChoosing++;
+        parent2.numberOfChildrenSinceChoosing++;
+
+        if((parent1.greatestAncestor == map.chosenAnimal || parent2.greatestAncestor == map.chosenAnimal) && map.chosenAnimal != null ){
+            addThisToList(map.chosenAnimal.descendantsOfChosenAnimal);
+            this.greatestAncestor = map.chosenAnimal;
+        }
     }
 
+    private void addThisToList(ArrayList<Animal> list){
+        if(!list.contains(this))
+            list.add(this);
+    }
+
+    private void changeNumberOfChildren(int numberOfChildrenChange){
+        this.numberOfChildren += numberOfChildrenChange;
+        this.map.animalNumberOfChildrenChanged(numberOfChildrenChange);
+    }
+
+    private void setNumberOfChildren(int numberOfChildren){
+        int change = numberOfChildren - this.numberOfChildren;
+        changeNumberOfChildren(change);
+    }
 
     public Animal(RectangularMap map, int x, int y) {
         this(map, new Vector2d(x, y));
@@ -34,6 +66,10 @@ public class Animal extends AbstractMapElement{
 
     public Animal(RectangularMap map) {
         this(map, 2, 2);
+    }
+
+    public void onDeath(){
+        setNumberOfChildren(0);
     }
 
     public String toString() {
@@ -46,6 +82,18 @@ public class Animal extends AbstractMapElement{
 
     public int getLifespan(){
         return this.lifespan;
+    }
+
+    public int getNumberOfChildren(){
+        return this.numberOfChildren;
+    }
+
+    public int getNumberOfChildrenSinceChoosing(){
+        return numberOfChildrenSinceChoosing;
+    }
+
+    public int getNumberOfDescendants(){
+        return this.descendantsOfChosenAnimal.size();
     }
 
     public Genome getGenome(){
@@ -82,7 +130,10 @@ public class Animal extends AbstractMapElement{
         this.position = futureVector;
     }
 
-
+    public void setTracked(){
+        this.greatestAncestor = this;
+        this.numberOfChildrenSinceChoosing = 0;
+    }
 
     private void generateDirection(){
         int geneNumber = (int) Math.floor(Math.random() * 32);
@@ -106,8 +157,16 @@ public class Animal extends AbstractMapElement{
         this.energyChangeObservers.add(observer);
     }
 
+    public void addNumberOfChildrenChangeObserver(IAnimalNumberOfChildrenChangeObserver observer){
+        this.numberOfChildrenChangeObservers.add(observer);
+    }
+
+    public void removeNumberOfChildrenChangeObserver(IAnimalNumberOfChildrenChangeObserver observer){
+        this.numberOfChildrenChangeObservers.add(observer);
+    }
+
     private void energyChanged(int energyChange){
-        this.map.animalEnergyChanged(this, energyChange);
+        this.map.animalEnergyChanged(energyChange);
     }
 
     private void positionChanged(Vector2d newPosition){

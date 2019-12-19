@@ -13,7 +13,7 @@ public class UI {
 //        JFrame.setDefaultLookAndFeelDecorated(true);
         try{UIManager.setLookAndFeel(
                 UIManager.getSystemLookAndFeelClassName());}
-        catch (Exception e){};
+        catch (Exception ignored){};
 
         JFrame frame = new JFrame("Animal World");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

@@ -4,13 +4,15 @@ import main.map.IMapStateChangeObserver;
 import main.map.RectangularMap;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class StatusPanel extends JPanel implements IMapStateChangeObserver {
     private JLabel animalsOnMapLabel;
     private JLabel plantsOnMapLabel;
     private JLabel epochLabel;
     private JLabel averageEnergyLabel;
-    private JLabel averageLifespan;
+    private JLabel averageLifespanLabel;
+    private JLabel averageNumberOfChildrenLabel;
     private RectangularMap map;
 
     StatusPanel(RectangularMap map){
@@ -22,12 +24,18 @@ public class StatusPanel extends JPanel implements IMapStateChangeObserver {
         this.plantsOnMapLabel = new JLabel("       Plants: 0");
         this.epochLabel = new JLabel("       Epoch: 0");
         this.averageEnergyLabel = new JLabel("       Average Energy: 0");
-        this.averageLifespan = new JLabel("       Average Lifespan: 0");
+        this.averageLifespanLabel = new JLabel("       Average Lifespan: 0");
+        this.averageNumberOfChildrenLabel = new JLabel("       Average Children: 0");
+
+        GridLayout grid = new GridLayout(2, 0);
+        this.setLayout(grid);
+
         this.add(animalsOnMapLabel);
         this.add(plantsOnMapLabel);
         this.add(epochLabel);
         this.add(averageEnergyLabel);
-        this.add(averageLifespan);
+        this.add(averageLifespanLabel);
+        this.add(averageNumberOfChildrenLabel);
     }
 
     @Override
@@ -36,6 +44,11 @@ public class StatusPanel extends JPanel implements IMapStateChangeObserver {
         this.plantsOnMapLabel.setText("       Plants: " + this.map.getNumberOfPlants());
         this.epochLabel.setText("       Epoch: " + this.map.getEpoch());
         this.averageEnergyLabel.setText("       Average Energy: " + this.map.getAverageEnergy());
-        this.averageLifespan.setText("       Average Lifespan: " + this.map.getAverageLifespan());
+        this.averageLifespanLabel.setText("       Average Lifespan: " + this.map.getAverageLifespan());
+        this.averageNumberOfChildrenLabel.setText("       Average Children: " + formatToString(this.map.getAverageNumberOfChildren()));
+    }
+
+    private String formatToString(double input){
+        return String.format("%.2f", input);
     }
 }
