@@ -8,9 +8,12 @@ import org.json.JSONObject;
 
 import java.util.*;
 
-public class RectangularMap implements IPositionChangeObserver {
+public class RectangularMap implements IPositionChangeObserver, IAnimalEnergyChangeObserver
+{
     public final Vector2d upperBoundary;
     public final Vector2d lowerBoundary = new Vector2d(0, 0);
+    public Animal chosenAnimal = null;
+    public boolean isChosenAnimalAlive = false;
 
     private JSONObject parameters;
 
@@ -19,6 +22,10 @@ public class RectangularMap implements IPositionChangeObserver {
     private int freeTiles;  //i have no idea what im doing
     private int numberOfAnimals = 0;
     private int numberOfPlants = 0;
+    private int epoch = 0;
+    private int totalEnergy = 0;
+    private int totalLifespanAtDeath = 0;
+    private int deadAnimals = 0;
     private Vector2d lowerJungleBoundary;
     private Vector2d upperJungleBoundary;
 
@@ -50,12 +57,33 @@ public class RectangularMap implements IPositionChangeObserver {
         return this.numberOfPlants;
     }
 
+    public int getEpoch(){
+        return this.epoch;
+    }
+
+    public int getAverageEnergy(){
+        return this.totalEnergy / this.numberOfAnimals;
+    }
+
+    public int getAverageLifespan(){
+        if(this.deadAnimals == 0)
+            return 0;
+        return this.totalLifespanAtDeath / this.deadAnimals;
+    }
+
     public void place(AbstractMapElement element) { //adds element on map, assumes it can be placed
         placeOnForcedPosition(element, element.getPosition());
     }
 
     public boolean isTileOccupied(Vector2d position) {
         return tilesOnMap.containsKey(position);
+    }
+
+    public Tile getTile(Vector2d position) {
+        if (!isTileOccupied(position))
+            throw new IllegalArgumentException("Accesing nonexistient tile at: " + position.toString());
+        else
+            return this.tilesOnMap.get(position);
     }
 
     public void elementPositionToBeChangedTo(AbstractMapElement element, Vector2d futurePosition) { //changes position of an element, asssumes calling method will change inner state
@@ -123,6 +151,10 @@ public class RectangularMap implements IPositionChangeObserver {
         }
     }
 
+    public void updateEpoch(){
+        this.epoch++;
+    }
+
     public void addObserver(IMapStateChangeObserver observer) {
         this.observers.add(observer);
     }
@@ -188,6 +220,10 @@ public class RectangularMap implements IPositionChangeObserver {
             ((Animal) element).removeObserver(this);
             this.animalList.remove((Animal) element);
             this.numberOfAnimals--;
+            if(this.chosenAnimal == (Animal) element)
+                this.isChosenAnimalAlive = false;
+            this.totalLifespanAtDeath += ((Animal) element).getLifespan();
+            this.deadAnimals++;
         }
         if (element instanceof Grass)
             this.numberOfPlants--;
@@ -242,4 +278,8 @@ public class RectangularMap implements IPositionChangeObserver {
         return vec;
     }
 
+    @Override
+    public void animalEnergyChanged(Animal animal, int energyChange) {
+        this.totalEnergy += energyChange;
+    }
 }

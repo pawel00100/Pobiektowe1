@@ -21,12 +21,6 @@ class SettingsPanel extends JPanel {
 
         JButton runButton=new JButton("run");
         JButton stopButton=new JButton("stop");
-        JButton thirdButton=new JButton("");
-        thirdButton.setPreferredSize(new Dimension(10,10));
-        thirdButton.setBorder(null);
-        thirdButton.setBorderPainted(false);
-        thirdButton.setContentAreaFilled(false);
-        thirdButton.addActionListener(e -> System.out.println("clocked"));
 
 
         this.slider = new JSlider(0,100,33);
@@ -41,7 +35,6 @@ class SettingsPanel extends JPanel {
 
         this.add(runButton);
         this.add(stopButton);
-        this.add(thirdButton);
         this.add(this.slider);
         this.add(this.label);
         this.setPreferredSize(new Dimension(300,50));

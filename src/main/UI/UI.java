@@ -11,9 +11,9 @@ public class UI {
     MapPanel mapPanel;
     public UI(RectangularMap map, JSONObject parameters){
 //        JFrame.setDefaultLookAndFeelDecorated(true);
-//        try{UIManager.setLookAndFeel(
-//                UIManager.getSystemLookAndFeelClassName());}
-//        catch (Exception e){};
+        try{UIManager.setLookAndFeel(
+                UIManager.getSystemLookAndFeelClassName());}
+        catch (Exception e){};
 
         JFrame frame = new JFrame("Animal World");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -29,6 +29,7 @@ public class UI {
         panel.add(new MapPanel(map));
         panel.add(new StatusPanel(map));
         panel.add(new GenomePanel(map));
+        panel.add(new DetailsPanel(map));
 
         frame.add(panel);
         frame.pack();

@@ -8,12 +8,15 @@ import java.util.List;
 
 public class Animal extends AbstractMapElement{
     private MapDirection currentDirection = MapDirection.NORTH;
-    private int energy = 100;
-    private List<IPositionChangeObserver> observers = new LinkedList<>();
+    private int energy = 0;
+    private int lifespan = 0;
+    private List<IPositionChangeObserver> positionChangeObservers = new LinkedList<>();
+    private List<IAnimalEnergyChangeObserver> energyChangeObservers = new LinkedList<>();
     private Genome genome;
 
     public Animal(RectangularMap map, Vector2d position) {
         super(map);
+        this.appendEnergy(100);
         this.position = staysOnMap(position);
         map.place(this);
         this.genome = new Genome();
@@ -41,6 +44,10 @@ public class Animal extends AbstractMapElement{
         return energy;
     }
 
+    public int getLifespan(){
+        return this.lifespan;
+    }
+
     public Genome getGenome(){
         return this.genome;
     }
@@ -50,23 +57,28 @@ public class Animal extends AbstractMapElement{
     }
 
     public void setEnergy(int energy){ //only for tests
+        int startingEnergy = this.energy;
         this.energy = Math.min(energy, 100);
+        this.energyChanged(this.energy - startingEnergy);
     }
 
     public void appendEnergy(int energy){
+        int startingEnergy = this.energy;
         this.energy = Math.min(this.energy + energy, 100);
+        this.energyChanged(this.energy - startingEnergy);
     }
 
     public void move(){
         generateDirection();
         moveForward();
+        this.lifespan++;
     }
 
     public void moveForward(){
-        this.energy -= 1;
+        this.appendEnergy(-1);
         Vector2d futureVector = this.position.add(this.currentDirection.toUnitVector());
         futureVector = staysOnMap(futureVector);
-        positionToBeChangedTo(futureVector);
+        positionChanged(futureVector);
         this.position = futureVector;
     }
 
@@ -79,15 +91,27 @@ public class Animal extends AbstractMapElement{
     }
 
     public void addObserver(IPositionChangeObserver observer){
-        this.observers.add(observer);
+        this.positionChangeObservers.add(observer);
     }
 
     public void removeObserver(IPositionChangeObserver observer){
-        this.observers.remove(observer);
+        this.positionChangeObservers.remove(observer);
     }
 
-    private void positionToBeChangedTo(Vector2d newPosition){
-        for (IPositionChangeObserver observer : this.observers) {
+    public void addEnegyChangeObserver(IAnimalEnergyChangeObserver observer){
+        this.energyChangeObservers.add(observer);
+    }
+
+    public void removeEnergyChangeObserver(IAnimalEnergyChangeObserver observer){
+        this.energyChangeObservers.add(observer);
+    }
+
+    private void energyChanged(int energyChange){
+        this.map.animalEnergyChanged(this, energyChange);
+    }
+
+    private void positionChanged(Vector2d newPosition){
+        for (IPositionChangeObserver observer : this.positionChangeObservers) {
             observer.elementPositionToBeChangedTo(this, newPosition);
         }
     }

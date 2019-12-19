@@ -2,14 +2,25 @@ package main.UI;
 
 import main.map.IMapStateChangeObserver;
 import main.map.RectangularMap;
+import main.mapElements.Animal;
 import main.mapElements.Vector2d;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 class MapPanel extends JPanel implements IMapStateChangeObserver {
+
+    class myButton extends JButton{
+        public final Vector2d mapPosition;
+        myButton(Vector2d mapPosition){
+            super();
+            this.mapPosition = mapPosition;
+        }
+    }
+
     private int widthInTiles;
     private int heightInTiles;
     private int tileSize;
@@ -19,10 +30,11 @@ class MapPanel extends JPanel implements IMapStateChangeObserver {
     private Color jungle2 = new Color(130, 156, 71);
     private Color animalColor = Color.DARK_GRAY;
     private Color grassColor = new Color(2, 172, 24);
+    private Color chosenAnimalColor = Color.RED;
     private RectangularMap map;
 
     RepaintManager r = new RepaintManager();
-    private ArrayList<ArrayList<JButton>> buttons = new ArrayList<>();
+    private ArrayList<ArrayList<myButton>> buttons = new ArrayList<>();
 
     MapPanel(RectangularMap map) {
         super();
@@ -54,14 +66,14 @@ class MapPanel extends JPanel implements IMapStateChangeObserver {
 
     private void createButtons(){
         for (int i = 0; i < this.heightInTiles; i++){
-            this.buttons.add(new ArrayList<JButton>());
+            this.buttons.add(new ArrayList<>());
             for (int j = 0; j < this.widthInTiles; j++) {
-                JButton b = new JButton();
+                myButton b = new myButton(new Vector2d(j, (this.heightInTiles - i - 1)));
                 b.setPreferredSize(new Dimension(this.tileSize,this.tileSize));
                 b.setBorder(null);
                 b.setBorderPainted(false);
                 b.setContentAreaFilled(false);
-                b.addActionListener(e -> System.out.println("clocked"));
+                b.addActionListener(this::onClick);
                 this.buttons.get(i).add(b);
                 this.add(b);
             }
@@ -82,7 +94,9 @@ class MapPanel extends JPanel implements IMapStateChangeObserver {
     private void drawObject(Graphics2D g, Vector2d tilePosition) {
         Color color;
         if(map.isTileOccupied(tilePosition)){
-            if (map.isAnimalOnTile(tilePosition))
+            if(this.map.chosenAnimal != null && tilePosition.equals(this.map.chosenAnimal.getPosition()))
+                color = this.chosenAnimalColor;
+            else if (map.isAnimalOnTile(tilePosition))
                 color = animalColor;
             else if (map.isGrassOnTile(tilePosition))
                 color = grassColor;
@@ -110,6 +124,19 @@ class MapPanel extends JPanel implements IMapStateChangeObserver {
         int xWindowPosition = tilePosition.x * this.tileSize;
         int yWindowPosition = (this.heightInTiles - tilePosition.y - 1) * this.tileSize; //window is drawn from top to bottom, while tile position is Cartesian
         g.fillRect(xWindowPosition, yWindowPosition, this.tileSize, this.tileSize);
+    }
+
+    private void onClick(ActionEvent e){
+        Vector2d mapPosition = ((myButton) e.getSource()).mapPosition;
+        if(!this.map.isAnimalOnTile(mapPosition)){
+            this.map.chosenAnimal = null;
+            return;
+        }
+        Animal chosenAnimal = (Animal) this.map.getTile(mapPosition).getElementsByEnergy().get(0);
+        this.map.chosenAnimal = chosenAnimal;
+        this.map.isChosenAnimalAlive = true;
+
+        mapStateChanged();
     }
 
 
