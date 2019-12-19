@@ -14,11 +14,12 @@ public class World {
         try {
             JSONObject parameters = new Parser().obj;
 
-            RectangularMap map = new RectangularMap(parameters);
+            RectangularMap map1 = new RectangularMap(parameters);
+            RectangularMap map2 = new RectangularMap(parameters);
 
-            new UI(map, parameters);
+            new UI(map1, map2, parameters);
 
-            new Run(map, parameters);
+            new Run(map1, map2, parameters);
         }
         catch (Exception exception){
             System.out.println(exception.getMessage());

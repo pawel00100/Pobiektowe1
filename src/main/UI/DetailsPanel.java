@@ -22,10 +22,19 @@ public class DetailsPanel extends JPanel implements IMapStateChangeObserver {
         this.numberOfChildrenLabel = new JLabel("       Children: 0");
         this.numberOfDescendantsLabel = new JLabel("        Descendants: 0");
         this.epochOfDeathLabel = new JLabel("        Time of Death: 0");
-        this.add(animalsOnMapLabel);
-        this.add(numberOfChildrenLabel);
-        this.add(numberOfDescendantsLabel);
-        this.add(epochOfDeathLabel);
+
+
+
+        JPanel panel = new JPanel();
+        panel.add(animalsOnMapLabel);
+        panel.add(numberOfChildrenLabel);
+        panel.add(numberOfDescendantsLabel);
+        panel.add(epochOfDeathLabel);
+
+        BoxLayout boxlayout = new BoxLayout(this, BoxLayout.Y_AXIS);
+        this.setLayout(boxlayout);
+        this.add(panel);
+        this.add(new SingleGenomePanel(this.map));
 
     }
 

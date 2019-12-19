@@ -54,7 +54,7 @@ class MapPanel extends JPanel implements IMapStateChangeObserver {
 
         int width = this.widthInTiles * this.tileSize;
         int height = this.heightInTiles * this.tileSize;
-        this.setPreferredSize(new Dimension(width, height));
+        this.setSize(new Dimension(width, height));
 
         GridLayout grid = new GridLayout(this.heightInTiles, this.widthInTiles);
         this.setLayout(grid);
@@ -62,6 +62,18 @@ class MapPanel extends JPanel implements IMapStateChangeObserver {
         createButtons();
         repaint();
 
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        drawMap(g);
+    }
+
+
+    @Override
+    public void mapStateChanged() {
+        repaint();
     }
 
     private void createButtons(){
@@ -138,17 +150,7 @@ class MapPanel extends JPanel implements IMapStateChangeObserver {
         this.map.epochOfDeath = 0;
         this.map.isChosenAnimalAlive = true;
 
-        mapStateChanged();
-    }
-
-
-    public void paint(Graphics G) {
-        drawMap(G);
-//        G.fillRect(0, 0 , width, height);
-    }
-
-    @Override
-    public void mapStateChanged() {
-        repaint();
+        this.map.mapStateChanged();
+//        mapStateChanged();
     }
 }
