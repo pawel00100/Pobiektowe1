@@ -29,10 +29,10 @@ class GenomePanel extends JPanel implements IMapStateChangeObserver {
 
     private void drawPanel(Graphics gAbstract) {
         Graphics2D g = (Graphics2D) gAbstract;
-        for (int i = 0; i < this.map.getNumberOfAnimals(); i++)
+        for (int i = 0; i < this.map.mapStatistics.getNumberOfAnimals(); i++)
             for (int j = 0; j < 32; j++){
                 int gene = map.getAnimalByNumber(i).getGenome().getGene(j);
-                drawSquare(g, new Vector2d(j,i), this.geneColors[gene], new Vector2d(this.width/32,this.height/this.map.getNumberOfAnimals()));
+                drawSquare(g, new Vector2d(j,i), this.geneColors[gene], new Vector2d(this.width/32,this.height/this.map.mapStatistics.getNumberOfAnimals()));
             }
     }
 

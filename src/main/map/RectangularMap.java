@@ -21,13 +21,8 @@ public class RectangularMap implements IPositionChangeObserver
     private List<Animal> animalList = new ArrayList<>(); //separate list of animals allows to skip iterating over grass tiles
     private Map<Vector2d, Tile> tilesOnMap = new LinkedHashMap<>();
     private int freeTiles;  //i have no idea what im doing
-    private int numberOfAnimals = 0;
-    private int numberOfPlants = 0;
-    private int epoch = 0;
-    private int totalEnergy = 0;
-    private int totalLifespanAtDeath = 0;
-    private int deadAnimals = 0;
-    private int numberOfChildrenOfAliveAnimals = 0;
+
+    public MapStatistics mapStatistics = new MapStatistics();
 
     private Vector2d lowerJungleBoundary;
     private Vector2d upperJungleBoundary;
@@ -52,31 +47,7 @@ public class RectangularMap implements IPositionChangeObserver
         this.parameters = parameters;
     }
 
-    public int getNumberOfAnimals(){
-        return this.numberOfAnimals;
-    }
 
-    public int getNumberOfPlants(){
-        return this.numberOfPlants;
-    }
-
-    public int getEpoch(){
-        return this.epoch;
-    }
-
-    public int getAverageEnergy(){
-        return this.totalEnergy / this.numberOfAnimals;
-    }
-
-    public int getAverageLifespan(){
-        if(this.deadAnimals == 0)
-            return 0;
-        return this.totalLifespanAtDeath / this.deadAnimals;
-    }
-
-    public double getAverageNumberOfChildren(){
-        return (double) this.numberOfChildrenOfAliveAnimals / this.numberOfAnimals;
-    }
 
 //    public int getEpochOfDeath(){
 //        return this.epochOfDeath;
@@ -162,10 +133,6 @@ public class RectangularMap implements IPositionChangeObserver
         }
     }
 
-    public void updateEpoch(){
-        this.epoch++;
-    }
-
     public void addObserver(IMapStateChangeObserver observer) {
         this.observers.add(observer);
     }
@@ -211,10 +178,10 @@ public class RectangularMap implements IPositionChangeObserver
         if (element instanceof Animal) {
             ((Animal) element).addObserver(this);
             this.animalList.add((Animal) element);
-            this.numberOfAnimals++;
+            this.mapStatistics.appendNumberOfAnimals(1);
         }
         if (element instanceof Grass)
-            this.numberOfPlants++;
+            this.mapStatistics.appendNumberOfPlants(1);
     }
 
     private void placeOnlyOnHashmap(AbstractMapElement element, Vector2d position) {
@@ -231,17 +198,17 @@ public class RectangularMap implements IPositionChangeObserver
             Animal animal = ((Animal) element);
             animal.removeObserver(this);
             this.animalList.remove(animal);
-            this.numberOfAnimals--;
+            this.mapStatistics.appendNumberOfAnimals(-1);
             if(this.chosenAnimal == animal){
                 this.isChosenAnimalAlive = false;
-                this.epochOfDeath = this.epoch;
+                this.epochOfDeath = this.mapStatistics.getEpoch();
             }
-            this.totalLifespanAtDeath += (animal).getLifespan();
-            this.deadAnimals++;
+            this.mapStatistics.appendTotalLifespanAtDeath( (animal).getLifespan() );
+            this.mapStatistics.appendDeadAnimals(1);
             animal.onDeath();
         }
         if (element instanceof Grass)
-            this.numberOfPlants--;
+            this.mapStatistics.appendNumberOfPlants(-1);
         removeFromTile(element, position);
     }
 
@@ -294,10 +261,10 @@ public class RectangularMap implements IPositionChangeObserver
     }
 
     public void animalEnergyChanged(int energyChange) {
-        this.totalEnergy += energyChange;
+        this.mapStatistics.appendTotalEnergy(energyChange);
     }
 
     public void animalNumberOfChildrenChanged(int numberOfChildrenChange) {
-        this.numberOfChildrenOfAliveAnimals += numberOfChildrenChange;
+        this.mapStatistics.appendNumberOfChildrenOfAliveAnimals(numberOfChildrenChange);
     }
 }

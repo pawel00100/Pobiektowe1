@@ -51,7 +51,7 @@ public class UI {
 
         panel.setBorder(new EmptyBorder(new Insets(10,10,10,10)));
 
-        panel.add(new SettingsPanel(this.parameters));
+        panel.add(new SettingsPanel(this.parameters, map));
         panel.add(new MapPanel(map));
         panel.add(new StatusPanel(map));
         panel.add(new GenomePanel(map));

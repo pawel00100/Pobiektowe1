@@ -1,5 +1,6 @@
 package main.UI;
 
+import main.map.RectangularMap;
 import org.json.JSONObject;
 
 import javax.swing.*;
@@ -13,7 +14,7 @@ class SettingsPanel extends JPanel {
     private JLabel label;
     private JSlider slider;
 
-    SettingsPanel(JSONObject parameters){
+    SettingsPanel(JSONObject parameters, RectangularMap map){
         super();
         this.parameters = parameters;
         this.parameters.put("runSpeed",1.0);
@@ -21,6 +22,7 @@ class SettingsPanel extends JPanel {
 
         JButton runButton=new JButton("run");
         JButton stopButton=new JButton("stop");
+        JButton saveButton=new JButton("save");
 
 
         this.slider = new JSlider(0,100,0);
@@ -31,10 +33,12 @@ class SettingsPanel extends JPanel {
         this.slider.addChangeListener(this::stateChanged);
         runButton.addActionListener(e -> this.parameters.put("isRunning",true));
         stopButton.addActionListener(e -> this.parameters.put("isRunning",false));
+        saveButton.addActionListener(e -> map.mapStatistics.writeFile());
 //        slider.addChangeListener(e -> label.setText( sliderValue((JSlider)e.getSource())));
 
         this.add(runButton);
         this.add(stopButton);
+        this.add(saveButton);
         this.add(this.slider);
         this.add(this.label);
         this.setPreferredSize(new Dimension(400,50));

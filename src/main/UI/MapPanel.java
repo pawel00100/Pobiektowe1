@@ -54,7 +54,7 @@ class MapPanel extends JPanel implements IMapStateChangeObserver {
 
         int width = this.widthInTiles * this.tileSize;
         int height = this.heightInTiles * this.tileSize;
-        this.setSize(new Dimension(width, height));
+        this.setPreferredSize(new Dimension(width, height));
 
         GridLayout grid = new GridLayout(this.heightInTiles, this.widthInTiles);
         this.setLayout(grid);

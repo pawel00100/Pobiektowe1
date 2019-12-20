@@ -40,12 +40,12 @@ public class StatusPanel extends JPanel implements IMapStateChangeObserver {
 
     @Override
     public void mapStateChanged() {
-        this.animalsOnMapLabel.setText("Animals: " + this.map.getNumberOfAnimals());
-        this.plantsOnMapLabel.setText("       Plants: " + this.map.getNumberOfPlants());
-        this.epochLabel.setText("       Epoch: " + this.map.getEpoch());
-        this.averageEnergyLabel.setText("       Average Energy: " + this.map.getAverageEnergy());
-        this.averageLifespanLabel.setText("       Average Lifespan: " + this.map.getAverageLifespan());
-        this.averageNumberOfChildrenLabel.setText("       Average Children: " + formatToString(this.map.getAverageNumberOfChildren()));
+        this.animalsOnMapLabel.setText("Animals: " + this.map.mapStatistics.getNumberOfAnimals());
+        this.plantsOnMapLabel.setText("       Plants: " + this.map.mapStatistics.getNumberOfPlants());
+        this.epochLabel.setText("       Epoch: " + this.map.mapStatistics.getEpoch());
+        this.averageEnergyLabel.setText("       Average Energy: " + this.map.mapStatistics.getAverageEnergy());
+        this.averageLifespanLabel.setText("       Average Lifespan: " + this.map.mapStatistics.getAverageLifespan());
+        this.averageNumberOfChildrenLabel.setText("       Average Children: " + formatToString(this.map.mapStatistics.getAverageNumberOfChildren()));
     }
 
     private String formatToString(double input){

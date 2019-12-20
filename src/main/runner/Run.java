@@ -36,7 +36,7 @@ public class Run {
             map.run();
             map.eatAndReproduce();
             map.placePlants();
-            map.updateEpoch();
+            map.mapStatistics.updateEpoch();
         }
         map.mapStateChanged();
     }
