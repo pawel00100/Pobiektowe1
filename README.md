@@ -13,3 +13,6 @@ Things not finished due to time comstraints:
 -Exceptions could be handled better
 
 -UI with larger map sizes takes long time to open
+
+
+May need external JSObject library from https://github.com/stleary/JSON-java/releases
