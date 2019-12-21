@@ -9,6 +9,7 @@ import java.awt.*;
 
 public class UI {
     private RectangularMap map;
+
     public UI(RectangularMap map){
         this.map = map;
 

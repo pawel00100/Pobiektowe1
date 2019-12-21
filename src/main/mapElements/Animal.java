@@ -25,7 +25,7 @@ public class Animal extends AbstractMapElement{
         super(map);
         this.map = map;
         this.genome = genome;
-        this.appendEnergy(100);
+        this.appendEnergy(this.map.parameters.getInt("startEnergy"));
         this.position = checkCrossingBoundary(position);
 
         this.map.place(this);
@@ -55,20 +55,19 @@ public class Animal extends AbstractMapElement{
     }
 
     public String toString() {
-        return currentDirection.toShortString();
+        return this.currentDirection.toShortString();
     }
 
     public int getEnergy(){
-        return energy;
+        return this.energy;
     }
 
     public int getLifespan(){
         return this.lifespan;
     }
 
-
     public int getNumberOfChildrenSinceChoosing(){
-        return numberOfChildrenSinceChoosing;
+        return this.numberOfChildrenSinceChoosing;
     }
 
     public int getNumberOfDescendants(){
@@ -79,15 +78,15 @@ public class Animal extends AbstractMapElement{
         return this.genome;
     }
 
-    public void setEnergy(int energy){ //only for tests
+    public void setEnergy(int energy){
         int startingEnergy = this.energy;
-        this.energy = Math.min(energy, 100);
+        this.energy = Math.min(energy, 250);
         this.energyChanged(this.energy - startingEnergy);
     }
 
     public void appendEnergy(int energy){
         int startingEnergy = this.energy;
-        this.energy = Math.min(this.energy + energy, 100);
+        this.energy = Math.min(this.energy + energy, 250);
         this.energyChanged(this.energy - startingEnergy);
     }
 
@@ -147,7 +146,7 @@ public class Animal extends AbstractMapElement{
     }
 
     private void moveForward(){
-        this.appendEnergy(-1);
+        this.appendEnergy(-this.map.parameters.getInt("moveEnergy"));
         Vector2d futureVector = this.position.add(this.currentDirection.toUnitVector());
         futureVector = checkCrossingBoundary(futureVector);
         positionChanged(futureVector);

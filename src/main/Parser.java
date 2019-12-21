@@ -1,4 +1,4 @@
-package main.parser;
+package main;
 import org.json.*;
 
 import java.io.FileReader;
@@ -9,7 +9,7 @@ public class Parser {
     public JSONObject obj;
     public Parser() throws IOException {
 
-        Reader reader = new FileReader("C:\\Users\\Pawel\\Documents\\Java\\PObiektowe1\\src\\main\\parameters.json");
+        Reader reader = new FileReader("parameters.json");
 
 
         int intValueOfChar;

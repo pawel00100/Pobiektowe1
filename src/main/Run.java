@@ -1,5 +1,6 @@
-package main.runner;
+package main;
 
+import main.UI.UI;
 import main.map.RectangularMap;
 import org.json.JSONObject;
 
@@ -27,11 +28,12 @@ public class Run implements Runnable{
     @Override
     public void run() {
         try {
+            new UI(map);
             long lastStepTIme = System.currentTimeMillis();
             while (true) {
                 if (this.map.isRunning) {
                     double runSpeed = this.map.runSpeed;
-                    int stepSize = (runSpeed > 40) ? (int) runSpeed / 20 : 1;
+                    int stepSize = (runSpeed > 40) ? (int) runSpeed / 10 : 1;
 
                     step(map, stepSize);
 
@@ -47,7 +49,7 @@ public class Run implements Runnable{
                 lastStepTIme = System.currentTimeMillis();
             }
         }
-        catch (Exception ignored){
+        catch (InterruptedException ignored){
         };
     }
 

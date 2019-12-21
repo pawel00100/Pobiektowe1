@@ -137,7 +137,7 @@ public class MapStatistics {
 
     public void writeFile() {
         try {
-            FileWriter writer = new FileWriter("MyFile.txt", false);
+            FileWriter writer = new FileWriter("History.txt", false);
             writer.write(this.history.toString());
             writer.close();
         } catch (IOException e) {

@@ -7,6 +7,7 @@ import javax.swing.event.ChangeEvent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 class SettingsPanel extends JPanel {
     private RectangularMap map;
@@ -14,7 +15,7 @@ class SettingsPanel extends JPanel {
     private JLabel label;
     private JSlider slider;
 
-    SettingsPanel(RectangularMap map){
+    SettingsPanel(RectangularMap map) {
         super();
         this.map = map;
 
@@ -25,10 +26,10 @@ class SettingsPanel extends JPanel {
         this.setPreferredSize(new Dimension(400,50));
     }
 
-    private void createComponents(){
-        createNewButton("run", e -> map.isRunning = true);
-        createNewButton("stop", e -> map.isRunning = false);
-        createNewButton("save", e -> map.mapStatistics.writeFile());
+    private void createComponents() {
+        createNewButton("run", e -> this.map.isRunning = true);
+        createNewButton("stop", e -> this.map.isRunning = false);
+        createNewButton("save", e -> this.map.mapStatistics.writeFile());
         createNewButton("Show most frequent", this::onClick);
 
         this.slider = new JSlider(0,100,0);
@@ -46,7 +47,7 @@ class SettingsPanel extends JPanel {
 
     private double sliderDoubleValue(){
         int input = this.slider.getValue(); //input 0 to 100
-        return Math.pow(10, ( (double) input / 100.0 * 5)); //logarithmic slider 1 to 1000
+        return Math.pow(10, ( (double) input / 100.0 * 3)); //logarithmic slider 1 to 1000
     }
 
     private String sliderValue(){

@@ -12,13 +12,12 @@ public class RectangularMap implements IPositionChangeObserver
     public Animal chosenAnimal = null;
     public boolean isChosenAnimalAlive = false; //not sure if needed
     public int epochOfDeath = 0;
-    public boolean isRunning = true;
-    public boolean showMostFrequent = true;
-    public double runSpeed = 10.0;
-    public boolean locked = false;
+    public boolean isRunning = false;
+    public boolean showMostFrequent = false;
+    public double runSpeed = 1;
 
 
-    private JSONObject parameters;
+    public JSONObject parameters;
 
     public List<Animal> animalList = new ArrayList<>(); //separate list of animals allows to skip iterating over grass tiles
     private Map<Vector2d, Tile> tilesOnMap = new LinkedHashMap<>();
@@ -145,6 +144,9 @@ public class RectangularMap implements IPositionChangeObserver
         for (IMapStateChangeObserver observer : this.observers) {
             observer.mapStateChanged();
         }
+        try {
+            Thread.sleep(200);
+        }catch(Exception ignored){}
     }
 
     private void calculateMapParameters(double jungleRatio){

@@ -5,8 +5,6 @@ import main.mapElements.Animal;
 import main.UI.UI;
 import main.mapElements.Genome;
 import main.mapElements.Vector2d;
-import main.parser.Parser;
-import main.runner.Run;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -21,21 +19,18 @@ public class World { ;
 
             generateAnimals(parameters.getInt("initialAnimals"), map1, map2);
 
-            new UI(map1);
-            new UI(map2);
-
-
             Thread t1 = new Thread(new Run(map1));
             Thread t2 = new Thread(new Run(map2));
+
             t1.start();
             t2.start();
 
         }
-        catch (Exception exception){
+        catch (IOException | InterruptedException exception){
             System.out.println(exception.getMessage());
         }
-    }
 
+    }
 
     private static void generateAnimals(int number, RectangularMap map1, RectangularMap map2){
         for (int i = 0; i < number; i++) {

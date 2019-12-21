@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 class GenomePanel extends JPanel implements IMapStateChangeObserver {
     private RectangularMap map;
     private Color[] geneColors = {Color.YELLOW, Color.BLUE,Color.GREEN, Color.GRAY, Color.RED, Color.WHITE, Color.ORANGE, Color.CYAN};
-    private int height = 250;
+    private int height = 550;
     private int width = 400;
 
 

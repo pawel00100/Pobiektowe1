@@ -11,26 +11,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-class CompareByEnergy implements Comparator {
-    @Override
-    public int compare(Object o1, Object o2) {
-        if(!(o1 instanceof AbstractMapElement) || !(o2 instanceof AbstractMapElement))
-            throw new IllegalArgumentException("comparing not map element");
-        AbstractMapElement element1 = (AbstractMapElement) o1;
-        AbstractMapElement element2 = (AbstractMapElement) o2;
-        if(!(element1 instanceof Animal)  && !(element2 instanceof Animal))
-            return 0;
-        if(!(element1 instanceof Animal))
-            return 1;
-        if(!(element2 instanceof Animal))
-            return -1;
-
-        return -Integer.compare(((Animal) element1).getEnergy(), ((Animal) element2).getEnergy());
-
-    }
-}
-
-
 public class Tile {
     private List<AbstractMapElement> elementsOnTile = new LinkedList<>();
     private int numberOfAnimals = 0;
@@ -110,9 +90,10 @@ public class Tile {
     }
 
     private void eatGrass(){
+        int energy = this.map.parameters.getInt("plantEnergy");
 
         for(Animal animal : getStrongestAnimals())
-            animal.appendEnergy(50/getStrongestAnimals().size());
+            animal.appendEnergy(energy/getStrongestAnimals().size());
         removeGrass();
     }
 

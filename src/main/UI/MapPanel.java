@@ -16,7 +16,7 @@ class MapPanel extends JPanel implements IMapStateChangeObserver {
     private int tileSize;
     private RectangularMap map;
 
-    RepaintManager r = new RepaintManager();
+
     private ArrayList<ArrayList<MyButton>> buttons = new ArrayList<>();
 
     static class MyButton extends JButton {
@@ -32,7 +32,6 @@ class MapPanel extends JPanel implements IMapStateChangeObserver {
         super();
         this.map = map;
         this.map.addObserver(this);
-
         setDimensions();
 
         this.setLayout(new GridLayout(this.sizeInTiles.y, this.sizeInTiles.x));
@@ -81,7 +80,7 @@ class MapPanel extends JPanel implements IMapStateChangeObserver {
 
         double heightToWidthRatio = (double) this.sizeInTiles.y / this.sizeInTiles.x;
 
-        int maxWindowSize = Math.min(360 + Math.max(this.sizeInTiles.x, this.sizeInTiles.y) * 6, 750); //scaling window size to the number of tiles with max limit
+        int maxWindowSize = Math.min(360 + Math.max(this.sizeInTiles.x, this.sizeInTiles.y) * 6, 850); //scaling window size to the number of tiles with max limit
         if (heightToWidthRatio <= 1)
             this.tileSize = maxWindowSize / this.sizeInTiles.x;
         else
@@ -167,8 +166,8 @@ class MapPanel extends JPanel implements IMapStateChangeObserver {
 
     private Color colorBasedOnEnergy(Animal animal) {
         int energy = animal.getEnergy();
-        int color = (int) (energy * 2.5);
-        int color2 = energy / 2;
+        int color = Math.min (energy * 2, 255);
+        int color2 = color / 5;
         return new Color(color2, color2, color);
     }
 
