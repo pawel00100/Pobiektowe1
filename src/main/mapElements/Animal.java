@@ -23,16 +23,19 @@ public class Animal extends AbstractMapElement{
     private ArrayList<Animal> descendantsOfChosenAnimal = new ArrayList<>();
 
     public Animal(RectangularMap map, Vector2d position) {
+        this(map, position, new Genome());
+    }
+
+    public Animal(RectangularMap map, Vector2d position, Genome genome) {
         super(map);
         this.appendEnergy(100);
         this.position = staysOnMap(position);
         map.place(this);
-        this.genome = new Genome();
+        this.genome = genome;
     }
 
     public Animal(RectangularMap map, Vector2d position, Animal parent1, Animal parent2){
-        this(map, position);
-        this.genome = new Genome(parent1.genome, parent2.genome);
+        this(map, position, new Genome(parent1.genome, parent2.genome));
 
         parent1.changeNumberOfChildren(1);
         parent2.changeNumberOfChildren(1);

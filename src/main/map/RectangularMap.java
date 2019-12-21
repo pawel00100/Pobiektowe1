@@ -43,7 +43,7 @@ public class RectangularMap implements IPositionChangeObserver
     }
 
     public RectangularMap(JSONObject parameters) {
-        this(parameters.getInt("width") - 1, parameters.getInt("height") - 1, parameters.getInt("initialAnimals"), parameters.getDouble("jungleRatio"));
+        this(parameters.getInt("width") - 1, parameters.getInt("height") - 1, 0, parameters.getDouble("jungleRatio"));
         this.parameters = parameters;
     }
 

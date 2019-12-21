@@ -18,7 +18,7 @@ class SettingsPanel extends JPanel {
         super();
         this.parameters = parameters;
         this.parameters.put("runSpeed",1.0);
-        this.parameters.put("isRunning",true);
+        this.parameters.put("isRunning",false);
 
         JButton runButton=new JButton("run");
         JButton stopButton=new JButton("stop");

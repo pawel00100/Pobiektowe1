@@ -109,7 +109,8 @@ class MapPanel extends JPanel implements IMapStateChangeObserver {
             if(this.map.chosenAnimal != null && this.map.isChosenAnimalAlive && tilePosition.equals(this.map.chosenAnimal.getPosition()))
                 color = this.chosenAnimalColor;
             else if (map.isAnimalOnTile(tilePosition))
-                color = animalColor;
+//                color = animalColor;
+                color = colorBasedOnEnergy((Animal) this.map.getTile(tilePosition).getElementsByEnergy().get(0));
             else if (map.isGrassOnTile(tilePosition))
                 color = grassColor;
             else
@@ -136,6 +137,13 @@ class MapPanel extends JPanel implements IMapStateChangeObserver {
         int xWindowPosition = tilePosition.x * this.tileSize;
         int yWindowPosition = (this.heightInTiles - tilePosition.y - 1) * this.tileSize; //window is drawn from top to bottom, while tile position is Cartesian
         g.fillRect(xWindowPosition, yWindowPosition, this.tileSize, this.tileSize);
+    }
+
+    private Color colorBasedOnEnergy(Animal animal){
+        int energy = animal.getEnergy();
+        int color = (int)(energy*2.5);
+        int color2 = (int)(energy/2);
+        return new Color(color2,color2, color);
     }
 
     private void onClick(ActionEvent e){

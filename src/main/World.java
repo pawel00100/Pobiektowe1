@@ -3,6 +3,7 @@ package main;
 import main.map.RectangularMap;
 import main.mapElements.Animal;
 import main.UI.UI;
+import main.mapElements.Genome;
 import main.mapElements.Vector2d;
 import main.parser.Parser;
 import main.runner.Run;
@@ -33,8 +34,9 @@ public class World { ;
     static void generateAnimals(int number, RectangularMap map1, RectangularMap map2){
         for (int i = 0; i < number; i++) {
             Vector2d position = generateRandomPosition(map1);
-            new Animal(map1, position);
-            new Animal(map2, position);
+            Genome genome = new Genome();
+            new Animal(map1, position, genome);
+            new Animal(map2, position, genome);
         }
     }
 
