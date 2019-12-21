@@ -21,10 +21,9 @@ public class World { ;
 
             generateAnimals(parameters.getInt("initialAnimals"), map1, map2);
 
-            new UI(map1, parameters);
-            new UI(map2, parameters);
-//            new UI(map1, map2, parameters);
-//            parameters.put("isRunning",true);
+            new UI(map1);
+            new UI(map2);
+
 
             Thread t1 = new Thread(new Run(map1));
             Thread t2 = new Thread(new Run(map2));
@@ -38,7 +37,7 @@ public class World { ;
     }
 
 
-    static void generateAnimals(int number, RectangularMap map1, RectangularMap map2){
+    private static void generateAnimals(int number, RectangularMap map1, RectangularMap map2){
         for (int i = 0; i < number; i++) {
             Vector2d position = generateRandomPosition(map1);
             Genome genome = new Genome();
@@ -47,7 +46,7 @@ public class World { ;
         }
     }
 
-    static Vector2d generateRandomPosition(RectangularMap map){
+    private static Vector2d generateRandomPosition(RectangularMap map){
         int xOffset = (int) ((map.upperBoundary.x - map.lowerBoundary.x + 1) * Math.random());
         int yOffset = (int) ((map.upperBoundary.y - map.lowerBoundary.y + 1) * Math.random());
         return new Vector2d(xOffset + map.lowerBoundary.x, yOffset + map.lowerBoundary.y);

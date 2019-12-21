@@ -6,9 +6,10 @@ package main.mapElements;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Genome implements Comparable {
-    public final List<Integer> genes;
+    private final List<Integer> genes;
     public final long genesAsNumber;
 
     public static void main(String[] args){
@@ -42,6 +43,55 @@ public class Genome implements Comparable {
     }
 
     public Genome(Genome parent1, Genome parent2) {
+        this.genes = generateGenesFromTwoParents(parent1,parent2);
+        this.genesAsNumber = convertToNumber();
+    }
+
+    @Override
+    public String toString(){
+        String string =  this.genes.get(0).toString();
+        for (int i = 1; i < 32; i++) {
+            string += this.genes.get(i).toString();
+        }
+    return string;
+    }
+
+    @Override
+    public boolean equals(Object genome2){
+        if(genome2 == null) //delete and chceck if works checking most frequent
+            return false;
+        if(this.genes.equals(genome2))
+            return true;
+        if(!(genome2 instanceof Genome))
+            return false;
+        return this.genes.equals(((Genome) genome2).genes);
+    }
+
+    public int getGene(int num){
+        return this.genes.get(num);
+    }
+
+    private long convertToNumber(){
+        long number = 0;
+        for (int i = 0; i < 32; i++) {
+            number += Math.round(Math.pow(10, 2* (7 - this.genes.get(i))));
+        }
+        return number;
+    }
+
+    private int randomGene(){
+        return randomInt(0,8);
+    }
+
+    private int randomPos(){
+        return randomInt(0,32);
+    }
+
+    private boolean isFirstSingleDonor(){
+        return Math.random() < 0.5;
+    }
+
+    private List<Integer> generateGenesFromTwoParents(Genome parent1, Genome parent2){
         int[] splitIndicies = generateSplitIndices();
 
         int splitIndex1 = splitIndicies[0];
@@ -66,63 +116,14 @@ public class Genome implements Comparable {
 
         genome.sort(Integer::compareTo);
         addMissingGenes(genome);
-        this.genes = genome;
-        this.genesAsNumber = convertToNumber();
-
-    }
-
-    @Override
-    public String toString(){
-        String string =  this.genes.get(0).toString();
-        for (int i = 1; i < 32; i++) {
-            string += this.genes.get(i).toString();
-        }
-    return string;
-    }
-
-    @Override
-    public boolean equals(Object genome2){
-        if(genome2 == null) //delete and chceck if works checking most frequent
-            return false;
-        if(genes.equals(genome2))
-            return true;
-        if(!(genome2 instanceof Genome))
-            return false;
-        return this.genes.equals(((Genome) genome2).genes);
-    }
-
-    public int getGene(int num){
-        return this.genes.get(num);
-    }
-
-    private long convertToNumber(){
-        long number = 0;
-//        for (int i = 31; i>=0 ; i--){
-//
-//        }
-        for (int i = 0; i < 32; i++) {
-            number += Math.round(Math.pow(10, 2* (7 - this.genes.get(i))));
-        }
-        return number;
-    }
-
-    private int randomGene(){
-        return (int) Math.floor(Math.random() * 8);
-    }
-
-    private int randomPos(){
-        return (int) Math.floor(Math.random() * 32);
-    }
-
-    private boolean isFirstSingleDonor(){
-        return Math.random() < 0.5;
+        return genome;
     }
 
     private int[] generateSplitIndices(){
-        int splitIndex1 = (int) Math.floor(Math.random() * 31) + 1;
+        int splitIndex1 = randomInt(1,32);
         int splitIndex2;
         do {
-            splitIndex2 = (int) Math.floor(Math.random() * 31) + 1;
+            splitIndex2 = randomInt(1,32);
         }
         while (splitIndex1 == splitIndex2);
 
@@ -169,7 +170,7 @@ public class Genome implements Comparable {
     }
 
     private int generateDonorFragmentNum(){
-        return  (int) Math.floor(Math.random() * 3);
+        return  randomInt(0,3);
     }
 
     private void addMissingGenes(List<Integer> genes){
@@ -191,6 +192,10 @@ public class Genome implements Comparable {
         if (genes.get(31) != 7)
             return 7;
         return -1;
+    }
+
+    private int randomInt(int min, int max){
+        return ThreadLocalRandom.current().nextInt(min, max);
     }
 
     @Override

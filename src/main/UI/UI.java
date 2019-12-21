@@ -8,22 +8,16 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class UI {
-    RectangularMap map;
-    JSONObject parameters;
-    MapPanel mapPanel;
-    public UI(RectangularMap map, JSONObject parameters){
+    private RectangularMap map;
+    public UI(RectangularMap map){
         this.map = map;
-        this.parameters = parameters;
 
-//        JFrame.setDefaultLookAndFeelDecorated(true);
         try{UIManager.setLookAndFeel(
                 UIManager.getSystemLookAndFeelClassName());}
-        catch (Exception ignored){};
+        catch (Exception ignored){}
 
         JFrame frame = new JFrame("Animal World");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-
 
         frame.add(singleRunPanel());
         frame.pack();
@@ -31,28 +25,44 @@ public class UI {
 
     }
 
-
-    private JPanel singleRunPanel(){
+    private JPanel leftPanel(){
         JPanel panel = new JPanel();
-        BoxLayout boxlayout = new BoxLayout(panel, BoxLayout.Y_AXIS);
-
-        panel.setLayout(boxlayout);
-
         panel.setBorder(new EmptyBorder(new Insets(10,10,10,10)));
 
-        panel.add(new SettingsPanel(map));
-        panel.add(new MapPanel(map));
-        panel.add(new StatusPanel(map));
-        panel.add(new SingleGenomePanel(map, null,() -> map.mapStatistics.mostFrequentGenome()));
+        BoxLayout boxlayout = new BoxLayout(panel, BoxLayout.Y_AXIS);
+        panel.setLayout(boxlayout);
 
-        panel.add(new GenomePanel(map));
-        panel.add(new DetailsPanel(map));
+        panel.add(new SettingsPanel(this.map));
+        panel.add(new MapPanel(this.map));
+        panel.add(new StatusPanel(this.map));
+        panel.add(new SingleGenomePanel(this.map, null,() -> this.map.mapStatistics.mostFrequentGenome()));
 
         return panel;
     }
 
-    public void mapRefresh(){
-        //this.mapPanel
+    private JPanel rightPanel(){
+        JPanel panel = new JPanel();
+        panel.setBorder(new EmptyBorder(new Insets(10,10,10,10)));
+
+        BoxLayout boxlayout = new BoxLayout(panel, BoxLayout.Y_AXIS);
+        panel.setLayout(boxlayout);
+
+        panel.add(new GenomePanel(this.map));
+        panel.add(new DetailsPanel(this.map));
+
+        return panel;
+    }
+
+    private JPanel singleRunPanel(){
+        JPanel panel = new JPanel();
+        BoxLayout boxlayout = new BoxLayout(panel, BoxLayout.X_AXIS);
+
+        panel.setLayout(boxlayout);
+
+        panel.add(leftPanel());
+        panel.add(rightPanel());
+
+        return panel;
     }
 
 }

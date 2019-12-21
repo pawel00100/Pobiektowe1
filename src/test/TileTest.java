@@ -12,19 +12,19 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class TileTest {
-    RectangularMap map;
-    Tile tile;
-    Animal animal1, animal1a, animal2, animal3;
-    Grass grass1;
+    private RectangularMap map;
+    private Tile tile;
+    private Animal animal1, animal1a, animal2, animal3;
+    private Grass grass1;
     @Before
     public void setUp() throws Exception {
-        map = new RectangularMap(10,10);
-        tile = new Tile(map, new Vector2d(2,2));
-        animal1 = new Animal(map);
-        animal1a = new Animal(map);
-        animal2 = new Animal(map, 3, 3);
-        animal3 = new Animal(map, 4, 4);
-        grass1 = new Grass(map, new Vector2d(2,2));
+        this.map = new RectangularMap(10,10);
+        this.tile = new Tile(this.map, new Vector2d(2,2));
+        this.animal1 = new Animal(this.map);
+        this.animal1a = new Animal(this.map);
+        this.animal2 = new Animal(this.map, 3, 3);
+        this.animal3 = new Animal(this.map, 4, 4);
+        this.grass1 = new Grass(this.map, new Vector2d(2,2));
     }
 
     @After
@@ -35,28 +35,28 @@ public class TileTest {
     @Test
     public void putOnTile() {
         assertTrue(this.tile.isEmpty());
-        this.tile.putOnTile(new Animal(map));
+        this.tile.putOnTile(new Animal(this.map));
         assertFalse(this.tile.isEmpty());
     }
 
     @Test
     public void removeFromTile() {
         assertTrue(this.tile.isEmpty());
-        this.tile.putOnTile(animal1);
+        this.tile.putOnTile(this.animal1);
         assertFalse(this.tile.isEmpty());
-        this.tile.removeFromTile(animal1);
+        this.tile.removeFromTile(this.animal1);
         assertTrue(this.tile.isEmpty());
 
-        this.tile.putOnTile(grass1);
+        this.tile.putOnTile(this.grass1);
         assertFalse(this.tile.isEmpty());
-        this.tile.removeFromTile(grass1);
+        this.tile.removeFromTile(this.grass1);
         assertTrue(this.tile.isEmpty());
     }
 
     @Test
     public void isEmpty() {
         assertTrue(this.tile.isEmpty());
-        this.tile.putOnTile(new Animal(map));
+        this.tile.putOnTile(new Animal(this.map));
         assertFalse(this.tile.isEmpty());
     }
 
@@ -83,15 +83,15 @@ public class TileTest {
 
     @Test
     public void getElementsByEnergy(){
-        this.tile.putOnTile(grass1);
-        this.tile.putOnTile(animal1);
-        this.tile.putOnTile(animal2);
-        this.tile.putOnTile(animal3);
-        animal1.setEnergy(20);
-        animal2.setEnergy(50);
-        animal3.setEnergy(30);
-        assertEquals(animal2, this.tile.getElementsByEnergy().get(0));
-        assertEquals(animal3, this.tile.getElementsByEnergy().get(1));
+        this.tile.putOnTile(this.grass1);
+        this.tile.putOnTile(this.animal1);
+        this.tile.putOnTile(this.animal2);
+        this.tile.putOnTile(this.animal3);
+        this.animal1.setEnergy(20);
+        this.animal2.setEnergy(50);
+        this.animal3.setEnergy(30);
+        assertEquals(this.animal2, this.tile.getElementsByEnergy().get(0));
+        assertEquals(this.animal3, this.tile.getElementsByEnergy().get(1));
     }
 
 

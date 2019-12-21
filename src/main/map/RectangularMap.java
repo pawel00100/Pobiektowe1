@@ -1,8 +1,5 @@
 package main.map;
 
-/*TODO:
-*  add checking free space in Jungle*/
-
 import main.mapElements.*;
 import org.json.JSONObject;
 
@@ -15,9 +12,9 @@ public class RectangularMap implements IPositionChangeObserver
     public Animal chosenAnimal = null;
     public boolean isChosenAnimalAlive = false; //not sure if needed
     public int epochOfDeath = 0;
-    public boolean isRunning = false;
-    public boolean showMostFrequent = false;
-    public double runSpeed = 1.0;
+    public boolean isRunning = true;
+    public boolean showMostFrequent = true;
+    public double runSpeed = 10.0;
     public boolean locked = false;
 
 
@@ -25,10 +22,10 @@ public class RectangularMap implements IPositionChangeObserver
 
     public List<Animal> animalList = new ArrayList<>(); //separate list of animals allows to skip iterating over grass tiles
     private Map<Vector2d, Tile> tilesOnMap = new LinkedHashMap<>();
-    private int freeTiles;  //i have no idea what im doing
-    private int freeTilesOnJungle;  //i have no idea what im doing
+    private int freeTiles;
+    private int freeTilesOnJungle;
 
-    public MapStatistics mapStatistics = new MapStatistics();
+    public final MapStatistics mapStatistics = new MapStatistics();
 
     private Vector2d lowerJungleBoundary;
     private Vector2d upperJungleBoundary;
@@ -40,7 +37,7 @@ public class RectangularMap implements IPositionChangeObserver
 
         calculateMapParameters(jungleRatio);
 
-        for (int i = 0; i < initialAnimals && freeTiles > 0; i++)
+        for (int i = 0; i < initialAnimals && this.freeTiles > 0; i++)
             new Animal(this, generateRandomUnoccupiedPosition(this.lowerBoundary, this.upperBoundary));
     }
 
@@ -53,18 +50,16 @@ public class RectangularMap implements IPositionChangeObserver
         this.parameters = parameters;
     }
 
-
-
-//    public int getEpochOfDeath(){
-//        return this.epochOfDeath;
-//    }
-
     public void place(AbstractMapElement element) { //adds element on map, assumes it can be placed
         placeOnForcedPosition(element, element.getPosition());
     }
 
+    public void remove(AbstractMapElement element) {
+        this.removeFromForcedPosition(element, element.getPosition());
+    }
+
     public boolean isTileOccupied(Vector2d position) {
-        return tilesOnMap.containsKey(position);
+        return this.tilesOnMap.containsKey(position);
     }
 
     public Tile getTile(Vector2d position) {
@@ -83,14 +78,10 @@ public class RectangularMap implements IPositionChangeObserver
         }
     }
 
-    public void remove(AbstractMapElement element) {
-        this.removeFromForcedPosition(element, element.getPosition());
-    }
-
     public boolean isElementOnMap(AbstractMapElement element) {
         Vector2d position = element.getPosition();
-        if (tilesOnMap.containsKey(position))
-            return tilesOnMap.get(position).isElementOnTile(element);
+        if (this.tilesOnMap.containsKey(position))
+            return this.tilesOnMap.get(position).isElementOnTile(element);
 
         return false;
     }
@@ -101,14 +92,14 @@ public class RectangularMap implements IPositionChangeObserver
 
     public boolean isAnimalOnTile(Vector2d position) {
         if (isTileOccupied(position))
-            return tilesOnMap.get(position).isAnimalOnTile();
+            return this.tilesOnMap.get(position).isAnimalOnTile();
 
         return false;
     }
 
     public boolean isGrassOnTile(Vector2d position) {
         if (isTileOccupied(position))
-            return tilesOnMap.get(position).isGrassOnTile();
+            return this.tilesOnMap.get(position).isGrassOnTile();
 
         return false;
     }
@@ -118,14 +109,14 @@ public class RectangularMap implements IPositionChangeObserver
     }
 
     public void updateEnergies() {
-        List<Animal> newList = new ArrayList<>(animalList);
+        List<Animal> newList = new ArrayList<>(this.animalList);
         for (Animal animal : newList)
             if (animal.getEnergy() <= 0)
                 remove(animal);
     }
 
     public void run() {
-        animalList.forEach(Animal::move);
+        this.animalList.forEach(Animal::move);
     }
 
     public void eatAndReproduce() {
@@ -135,9 +126,9 @@ public class RectangularMap implements IPositionChangeObserver
 
     public void placePlants() {
 
-        if(freeTilesOnJungle > 0)
+        if(this.freeTilesOnJungle > 0)
             new Grass(this, generateRandomUnoccupiedPosition(this.lowerJungleBoundary, this.upperJungleBoundary));
-        if(freeTiles - freeTilesOnJungle > 0)
+        if(this.freeTiles - this.freeTilesOnJungle > 0)
             new Grass(this,generateRandomPositionWithException(this.lowerBoundary, this.upperBoundary, this.lowerJungleBoundary, this.upperJungleBoundary));
 
     }
@@ -233,7 +224,7 @@ public class RectangularMap implements IPositionChangeObserver
     }
 
     private void putOnTile(AbstractMapElement element, Vector2d position) { //adds element on tile
-        if (!tilesOnMap.containsKey(position)) {
+        if (!this.tilesOnMap.containsKey(position)) {
             this.tilesOnMap.put(position, new Tile(this, position));
             this.freeTiles--;
             if(position.precedes(this.upperJungleBoundary) && position.follows(this.lowerJungleBoundary))

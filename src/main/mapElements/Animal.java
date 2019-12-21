@@ -11,16 +11,10 @@ public class Animal extends AbstractMapElement{
     private int energy = 0;
     private int lifespan = 0;
     private List<IPositionChangeObserver> positionChangeObservers = new LinkedList<>();
-    private List<IAnimalEnergyChangeObserver> energyChangeObservers = new LinkedList<>();
-    private List<IAnimalNumberOfChildrenChangeObserver> numberOfChildrenChangeObservers = new LinkedList<>();
     private Genome genome;
-
     private Animal greatestAncestor = null;
-//    private Set<Animal> children = new HashSet<>();
-//    private Set<Animal> descendants = new HashSet<>();
     private int numberOfChildren = 0;
     private int numberOfChildrenSinceChoosing = 0;
-    private ArrayList<Animal> childrenOfChosenAnimal = new ArrayList<>();
     private ArrayList<Animal> descendantsOfChosenAnimal = new ArrayList<>();
 
     public Animal(RectangularMap map, Vector2d position) {
@@ -52,32 +46,12 @@ public class Animal extends AbstractMapElement{
         }
     }
 
-    private void addThisToList(ArrayList<Animal> list){
-        if(!list.contains(this))
-            list.add(this);
-    }
-
-    private void changeNumberOfChildren(int numberOfChildrenChange){
-        this.numberOfChildren += numberOfChildrenChange;
-        this.map.animalNumberOfChildrenChanged(numberOfChildrenChange);
-    }
-
-    private void setNumberOfChildren(int numberOfChildren){
-        int change = numberOfChildren - this.numberOfChildren;
-        changeNumberOfChildren(change);
-    }
-
     public Animal(RectangularMap map, int x, int y) {
         this(map, new Vector2d(x, y));
     }
 
     public Animal(RectangularMap map) {
         this(map, 2, 2);
-    }
-
-    public void onDeath(){
-        setNumberOfChildren(0);
-        this.map.mapStatistics.removeGenome(this.genome);
     }
 
     public String toString() {
@@ -92,9 +66,6 @@ public class Animal extends AbstractMapElement{
         return this.lifespan;
     }
 
-    public int getNumberOfChildren(){
-        return this.numberOfChildren;
-    }
 
     public int getNumberOfChildrenSinceChoosing(){
         return numberOfChildrenSinceChoosing;
@@ -106,10 +77,6 @@ public class Animal extends AbstractMapElement{
 
     public Genome getGenome(){
         return this.genome;
-    }
-
-    public MapDirection getDirection() {
-        return this.currentDirection;
     }
 
     public void setEnergy(int energy){ //only for tests
@@ -130,23 +97,9 @@ public class Animal extends AbstractMapElement{
         this.lifespan++;
     }
 
-    public void moveForward(){
-        this.appendEnergy(-1);
-        Vector2d futureVector = this.position.add(this.currentDirection.toUnitVector());
-        futureVector = checkCrossingBoundary(futureVector);
-        positionChanged(futureVector);
-        this.position = futureVector;
-    }
-
     public void setTracked(){
         this.greatestAncestor = this;
         this.numberOfChildrenSinceChoosing = 0;
-    }
-
-    private void generateDirection(){
-        int geneNumber = (int) Math.floor(Math.random() * 32);
-        int rotationNumber = this.genome.getGene(geneNumber);
-        this.currentDirection = this.currentDirection.rotateBy(rotationNumber);
     }
 
     public void addObserver(IPositionChangeObserver observer){
@@ -157,20 +110,30 @@ public class Animal extends AbstractMapElement{
         this.positionChangeObservers.remove(observer);
     }
 
-    public void addEnegyChangeObserver(IAnimalEnergyChangeObserver observer){
-        this.energyChangeObservers.add(observer);
+    public void onDeath(){
+        setNumberOfChildren(0);
+        this.map.mapStatistics.removeGenome(this.genome);
     }
 
-    public void removeEnergyChangeObserver(IAnimalEnergyChangeObserver observer){
-        this.energyChangeObservers.add(observer);
+    private void generateDirection(){
+        int geneNumber = (int) Math.floor(Math.random() * 32);
+        int rotationNumber = this.genome.getGene(geneNumber);
+        this.currentDirection = this.currentDirection.rotateBy(rotationNumber);
     }
 
-    public void addNumberOfChildrenChangeObserver(IAnimalNumberOfChildrenChangeObserver observer){
-        this.numberOfChildrenChangeObservers.add(observer);
+    private void addThisToList(ArrayList<Animal> list){
+        if(!list.contains(this))
+            list.add(this);
     }
 
-    public void removeNumberOfChildrenChangeObserver(IAnimalNumberOfChildrenChangeObserver observer){
-        this.numberOfChildrenChangeObservers.add(observer);
+    private void changeNumberOfChildren(int numberOfChildrenChange){
+        this.numberOfChildren += numberOfChildrenChange;
+        this.map.animalNumberOfChildrenChanged(numberOfChildrenChange);
+    }
+
+    private void setNumberOfChildren(int numberOfChildren){
+        int change = numberOfChildren - this.numberOfChildren;
+        changeNumberOfChildren(change);
     }
 
     private void energyChanged(int energyChange){
@@ -182,6 +145,15 @@ public class Animal extends AbstractMapElement{
             observer.elementPositionToBeChangedTo(this, newPosition);
         }
     }
+
+    private void moveForward(){
+        this.appendEnergy(-1);
+        Vector2d futureVector = this.position.add(this.currentDirection.toUnitVector());
+        futureVector = checkCrossingBoundary(futureVector);
+        positionChanged(futureVector);
+        this.position = futureVector;
+    }
+
 
     private Vector2d checkCrossingBoundary(Vector2d position){
         if(position.x > this.map.upperBoundary.x)

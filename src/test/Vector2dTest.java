@@ -7,6 +7,10 @@ import static org.junit.Assert.*;
 
 public class Vector2dTest {
 
+    /*
+    It was done before I learned about setup / teardown
+    */
+
     @Test
     public void testToString() {
         Vector2d v = new Vector2d(1, 9);

@@ -2,7 +2,6 @@ package main.UI;
 
 import main.map.IMapStateChangeObserver;
 import main.map.RectangularMap;
-import main.mapElements.Animal;
 import main.mapElements.Genome;
 import main.mapElements.Vector2d;
 
@@ -12,12 +11,12 @@ import java.awt.*;
 import java.util.function.Supplier;
 
 public   class SingleGenomePanel extends JPanel implements IMapStateChangeObserver{
-    RectangularMap map; //can be removed if observer changed
-    Genome genome;
-    Color[] geneColors = {Color.YELLOW, Color.BLUE,Color.GREEN, Color.GRAY, Color.RED, Color.WHITE, Color.ORANGE, Color.CYAN};
-    int height = 20;
-    int width = 400;
-    Supplier<Genome> genomeGetter;
+    private RectangularMap map; //can be removed if observer changed
+    private Genome genome;
+    private Color[] geneColors = {Color.YELLOW, Color.BLUE,Color.GREEN, Color.GRAY, Color.RED, Color.WHITE, Color.ORANGE, Color.CYAN};
+    private int height = 20;
+    private int width = 400;
+    private Supplier<Genome> genomeGetter;
 
     SingleGenomePanel(RectangularMap map, Genome genome, Supplier<Genome> genomeGetter){
         super();
@@ -63,7 +62,7 @@ public   class SingleGenomePanel extends JPanel implements IMapStateChangeObserv
 
     @Override
     public void mapStateChanged() {
-        this.genome = genomeGetter.get();
+        this.genome = this.genomeGetter.get();
         repaint();
     }
 }

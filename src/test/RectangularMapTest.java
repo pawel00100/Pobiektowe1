@@ -52,10 +52,6 @@ public class RectangularMapTest {
     }
 
     @Test
-    public void elementPositionToBeChangedTo() {
-    }
-
-    @Test
     public void isElementOnMap() {
         assertTrue(this.map1.isElementOnMap(animal1));
         assertFalse(this.map1.isElementOnMap(animal3));
@@ -76,9 +72,6 @@ public class RectangularMapTest {
         assertFalse(map1.isAnimalOnTile(new Vector2d(5,5)));
     }
 
-    @Test
-    public void isGrassOnTile() {
-    }
 
     @Test
     public void isTileJungle() {
@@ -88,19 +81,5 @@ public class RectangularMapTest {
         assertFalse(map2.isTileJungle(new Vector2d(0,0)));
     }
 
-    @Test
-    public void updateEnergies() {
-    }
 
-    @Test
-    public void run() {
-    }
-
-    @Test
-    public void eatAndReproduce() {
-    }
-
-    @Test
-    public void placePlants() {
-    }
 }

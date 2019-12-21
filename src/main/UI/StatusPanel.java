@@ -20,22 +20,25 @@ public class StatusPanel extends JPanel implements IMapStateChangeObserver {
         this.map = map;
         this.map.addObserver(this);
 
-        this.animalsOnMapLabel = new JLabel("Animals: 0");
-        this.plantsOnMapLabel = new JLabel("       Plants: 0");
-        this.epochLabel = new JLabel("       Epoch: 0");
-        this.averageEnergyLabel = new JLabel("       Average Energy: 0");
-        this.averageLifespanLabel = new JLabel("       Average Lifespan: 0");
-        this.averageNumberOfChildrenLabel = new JLabel("       Average Children: 0");
+        createLabels();
 
         GridLayout grid = new GridLayout(2, 0);
         this.setLayout(grid);
+    }
 
-        this.add(animalsOnMapLabel);
-        this.add(plantsOnMapLabel);
-        this.add(epochLabel);
-        this.add(averageEnergyLabel);
-        this.add(averageLifespanLabel);
-        this.add(averageNumberOfChildrenLabel);
+    private void createLabels(){
+        this.animalsOnMapLabel = createLabel("Animals: 0");
+        this.plantsOnMapLabel = createLabel("       Plants: 0");
+        this.epochLabel = createLabel("       Epoch: 0");
+        this.averageEnergyLabel = createLabel("       Average Energy: 0");
+        this.averageLifespanLabel = createLabel("       Average Lifespan: 0");
+        this.averageNumberOfChildrenLabel = createLabel("       Average Children: 0");
+    }
+
+    private JLabel createLabel(String text){
+        JLabel label = new JLabel(text);
+        this.add(label);
+        return label;
     }
 
     @Override
