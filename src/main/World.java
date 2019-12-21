@@ -22,6 +22,7 @@ public class World { ;
             generateAnimals(parameters.getInt("initialAnimals"), map1, map2);
 
             new UI(map1, map2, parameters);
+//            parameters.put("isRunning",true);
 
             new Run(map1, map2, parameters);
         }

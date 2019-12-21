@@ -82,6 +82,8 @@ public class Genome implements Comparable {
 
     @Override
     public boolean equals(Object genome2){
+        if(genome2 == null) //delete and chceck if works checking most frequent
+            return false;
         if(genes.equals(genome2))
             return true;
         if(!(genome2 instanceof Genome))

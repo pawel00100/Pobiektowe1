@@ -52,7 +52,7 @@ public class UI {
         panel.setBorder(new EmptyBorder(new Insets(10,10,10,10)));
 
         panel.add(new SettingsPanel(this.parameters, map));
-        panel.add(new MapPanel(map));
+        panel.add(new MapPanel(map,this.parameters));
         panel.add(new StatusPanel(map));
         panel.add(new SingleGenomePanel(map, null,() -> map.mapStatistics.mostFrequentGenome()));
 

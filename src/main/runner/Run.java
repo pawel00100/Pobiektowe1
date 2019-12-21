@@ -9,14 +9,15 @@ public class Run {
         long lastStepTIme = System.currentTimeMillis();
         while (true) {
             if ((boolean) parameters.get("isRunning")) {
-                int runSpeed = (int)(double) parameters.get("runSpeed");
-                int stepSize = (runSpeed > 40) ? runSpeed / 20 : 1;
+                double runSpeed = (double) parameters.get("runSpeed");
+                int stepSize = (runSpeed > 40) ? (int)runSpeed / 20 : 1;
 
                 step(map1, stepSize);
                 step(map2, stepSize);
 
-                while (System.currentTimeMillis() - (long) (1000.0 / (double) parameters.get("runSpeed")) < lastStepTIme) {
-                    Thread.sleep(10);
+
+                while (System.currentTimeMillis() - (long) (1000.0 / runSpeed * stepSize) < lastStepTIme) {
+                    Thread.sleep(1);
                 }
 
             } else {

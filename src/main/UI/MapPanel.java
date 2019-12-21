@@ -4,6 +4,7 @@ import main.map.IMapStateChangeObserver;
 import main.map.RectangularMap;
 import main.mapElements.Animal;
 import main.mapElements.Vector2d;
+import org.json.JSONObject;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,8 +14,8 @@ import java.util.ArrayList;
 
 class MapPanel extends JPanel implements IMapStateChangeObserver {
 
-    class myButton extends JButton{
-        public final Vector2d mapPosition;
+    static class myButton extends JButton{
+        final Vector2d mapPosition;
         myButton(Vector2d mapPosition){
             super();
             this.mapPosition = mapPosition;
@@ -24,23 +25,17 @@ class MapPanel extends JPanel implements IMapStateChangeObserver {
     private int widthInTiles;
     private int heightInTiles;
     private int tileSize;
-//    private Color chosen =
-    private Color gravel = new Color(200, 150, 100);
-    private Color gravel2 = new Color(194, 140, 86);
-    private Color jungle1 = new Color(136, 161, 73);
-    private Color jungle2 = new Color(130, 156, 71);
-    private Color animalColor = Color.DARK_GRAY;
-    private Color grassColor = new Color(2, 172, 24);
-    private Color chosenAnimalColor = new Color(227, 34, 36);
     private RectangularMap map;
+    private JSONObject parameters;
 
     RepaintManager r = new RepaintManager();
     private ArrayList<ArrayList<myButton>> buttons = new ArrayList<>();
 
-    MapPanel(RectangularMap map) {
+    MapPanel(RectangularMap map, JSONObject parameters) {
         super();
         this.map = map;
         this.map.addObserver(this);
+        this.parameters = parameters;
 
         //this section in code makes sure that each tile is square and neither width or height is above maxSize
         this.widthInTiles = this.map.upperBoundary.x - this.map.lowerBoundary.x + 1;
@@ -108,26 +103,30 @@ class MapPanel extends JPanel implements IMapStateChangeObserver {
         Color color;
         if(map.isTileOccupied(tilePosition)){
             if(this.map.chosenAnimal != null && this.map.isChosenAnimalAlive && tilePosition.equals(this.map.chosenAnimal.getPosition()))
-                color = this.chosenAnimalColor;
-            else if (map.isAnimalOnTile(tilePosition))
-//                color = animalColor;
-                color = colorBasedOnEnergy((Animal) this.map.getTile(tilePosition).getElementsByEnergy().get(0));
+                color = ColorScheme.chosenAnimalColor;
+
+            else if (map.isAnimalOnTile(tilePosition)) {
+                if(this.parameters.getBoolean("showMostFrequent") && ((Animal)this.map.getTile(tilePosition).getElementsByEnergy().get(0)).getGenome().equals(this.map.mapStatistics.mostFrequentGenome()))
+                    color = ColorScheme.mostFrequentGenome;
+                else
+                    color = colorBasedOnEnergy((Animal) this.map.getTile(tilePosition).getElementsByEnergy().get(0));
+            }
             else if (map.isGrassOnTile(tilePosition))
-                color = grassColor;
+                color = ColorScheme.grassColor;
             else
                 color = Color.RED;
         }
         else if(this.map.isTileJungle(tilePosition)){
             if ((tilePosition.x + tilePosition.y) % 2 == 0)
-                color = this.jungle1;
+                color = ColorScheme.jungle1;
             else
-                color = this.jungle2;
+                color = ColorScheme.jungle2;
         }
         else{
             if ((tilePosition.x + tilePosition.y) % 2 == 0)
-                color = this.gravel;
+                color = ColorScheme.gravel;
             else
-                color = this.gravel2;
+                color = ColorScheme.gravel2;
         }
 
         drawSquare(g, tilePosition, color);
