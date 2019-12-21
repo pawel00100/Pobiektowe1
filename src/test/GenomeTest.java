@@ -29,8 +29,8 @@ public class GenomeTest {
         for (int i = 0; i < 32; i++) {
             this.genes2.add(0);
         }
-        this.genome1 = new Genome(this.genes1);
-        this.genome2  = new Genome(this.genes2);
+        this.genome1 = new Genome(this.genes1);  //0000111122223333...   four each genes
+        this.genome2  = new Genome(this.genes2);  //00000...001234567   has 25 zeros
     }
 
     @After
@@ -40,7 +40,7 @@ public class GenomeTest {
     @Test
     public void testToString() {
 
-        assertEquals("0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7" , genome1.toString());
+        assertEquals("00001111222233334444555566667777" , genome1.toString());
     }
 
     @Test
@@ -52,8 +52,8 @@ public class GenomeTest {
             }
         }
         Genome compare = new Genome(compareGenes);
-        assertTrue(compare.equals(this.genome1));
-        assertFalse(compare.equals(this.genome2));
+        assertEquals(compare, this.genome1);
+        assertNotEquals(compare, this.genome2);
     }
 
     @Test
@@ -74,9 +74,14 @@ public class GenomeTest {
         expectedGenes.addAll(Arrays.asList(1,2,3,4,5,6,7));
         Genome expectedGenome = new Genome(expectedGenes);
 
-        Genome newGenome = new Genome(this.genes2);
-
         assertEquals(expectedGenome, genome2);
+    }
+
+    @Test
+    public void convertToNumber(){
+        assertEquals(404040404040404L, genome1.genesAsNumber);
+        assertEquals(2501010101010101L, genome2.genesAsNumber);
+
     }
 
 }

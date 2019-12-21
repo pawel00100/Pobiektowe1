@@ -2,10 +2,15 @@ package main.UI;
 
 import main.map.IMapStateChangeObserver;
 import main.map.RectangularMap;
+import main.mapElements.Animal;
+import main.mapElements.Genome;
 import main.mapElements.Vector2d;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 class GenomePanel extends JPanel implements IMapStateChangeObserver {
     RectangularMap map;
@@ -29,12 +34,26 @@ class GenomePanel extends JPanel implements IMapStateChangeObserver {
 
     private void drawPanel(Graphics gAbstract) {
         Graphics2D g = (Graphics2D) gAbstract;
+        List<Genome> l = new ArrayList<>();
+        for (Animal animal : this.map.animalList){  //try with streams
+            l.add(animal.getGenome());
+        }
+        l.sort(Genome::compareTo);
         for (int i = 0; i < this.map.mapStatistics.getNumberOfAnimals(); i++)
             for (int j = 0; j < 32; j++){
-                int gene = map.getAnimalByNumber(i).getGenome().getGene(j);
+                int gene = l.get(i).getGene(j);
                 drawSquare(g, new Vector2d(j,i), this.geneColors[gene], new Vector2d(this.width/32,this.height/this.map.mapStatistics.getNumberOfAnimals()));
             }
     }
+
+//    private void drawPanel(Graphics gAbstract) {
+//        Graphics2D g = (Graphics2D) gAbstract;
+//        for (int i = 0; i < this.map.mapStatistics.getNumberOfAnimals(); i++)
+//            for (int j = 0; j < 32; j++){
+//                int gene = map.getAnimalByNumber(i).getGenome().getGene(j);
+//                drawSquare(g, new Vector2d(j,i), this.geneColors[gene], new Vector2d(this.width/32,this.height/this.map.mapStatistics.getNumberOfAnimals()));
+//            }
+//    }
 
     private void drawSquare(Graphics2D g, Vector2d tilePosition, Color color, Vector2d size) {
         g.setColor(color);

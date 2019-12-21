@@ -7,8 +7,9 @@ package main.mapElements;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Genome {
-    private final List<Integer> genes;
+public class Genome implements Comparable {
+    public final List<Integer> genes;
+    public final long genesAsNumber;
 
     public static void main(String[] args){
         System.out.println("aa");
@@ -30,11 +31,14 @@ public class Genome {
 
         genes.sort(Integer::compareTo);
         this.genes = genes;
+        this.genesAsNumber = convertToNumber();
     }
 
     public Genome(List<Integer> genes){
         this.genes = genes;
         addMissingGenes(this.genes);
+        this.genesAsNumber = convertToNumber();
+
     }
 
     public Genome(Genome parent1, Genome parent2) {
@@ -63,13 +67,15 @@ public class Genome {
         genome.sort(Integer::compareTo);
         addMissingGenes(genome);
         this.genes = genome;
+        this.genesAsNumber = convertToNumber();
+
     }
 
     @Override
     public String toString(){
         String string =  this.genes.get(0).toString();
         for (int i = 1; i < 32; i++) {
-            string = string + ", " + this.genes.get(i).toString();
+            string += this.genes.get(i).toString();
         }
     return string;
     }
@@ -85,6 +91,17 @@ public class Genome {
 
     public int getGene(int num){
         return this.genes.get(num);
+    }
+
+    private long convertToNumber(){
+        long number = 0;
+//        for (int i = 31; i>=0 ; i--){
+//
+//        }
+        for (int i = 0; i < 32; i++) {
+            number += Math.round(Math.pow(10, 2* (7 - this.genes.get(i))));
+        }
+        return number;
     }
 
     private int randomGene(){
@@ -174,4 +191,11 @@ public class Genome {
         return -1;
     }
 
+    @Override
+    public int compareTo(Object o) {
+        if (this == o)
+            return 0;
+        Genome comparedGenome = (Genome) o;
+        return Long.compare(this.genesAsNumber, comparedGenome.genesAsNumber);
+    }
 }

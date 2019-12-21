@@ -1,16 +1,27 @@
 package main.map;
 
+import main.mapElements.Genome;
+
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 public class MapStatistics {
     private int numberOfAnimals = 0;
     private int numberOfPlants = 0;
+    private int numberOfPlantsOnJungle = 0;
     private int epoch = 0;
     private int totalEnergy = 0;
     private int totalLifespanAtDeath = 0;
     private int deadAnimals = 0;
     private int numberOfChildrenOfAliveAnimals = 0;
+
+    public Map<Genome, Integer> numberOfEachGenome = new TreeMap<>();
+//    private  Map<Integer, Set<Genome>>  genomesOfEachNumber = new TreeMap<>();
+
     private StringBuilder history = new StringBuilder();
 
     MapStatistics(){
@@ -23,6 +34,10 @@ public class MapStatistics {
 
     public int getNumberOfPlants(){
         return this.numberOfPlants;
+    }
+
+    public int getNumberOfPlantsOnJungle(){
+        return this.numberOfPlantsOnJungle;
     }
 
     public int getEpoch(){
@@ -57,6 +72,10 @@ public class MapStatistics {
         this.numberOfPlants += number;
     }
 
+    public void appendNumberOfPlantsOnJungle(int number){
+        this.numberOfPlantsOnJungle += number;
+    }
+
     public void appendTotalLifespanAtDeath(int number){
         this.totalLifespanAtDeath += number;
     }
@@ -73,14 +92,86 @@ public class MapStatistics {
         this.numberOfChildrenOfAliveAnimals += number;
     }
 
+    public void addGenome(Genome genome){
+
+        if(!this.numberOfEachGenome.containsKey(genome))
+            this.numberOfEachGenome.put(genome, 1);
+        else {
+            int oldNumber = this.numberOfEachGenome.get(genome);
+            this.numberOfEachGenome.put(genome, oldNumber+1);
+        }
+    }
+
+    public void removeGenome(Genome genome){
+        if(!this.numberOfEachGenome.containsKey(genome))
+            throw new IllegalArgumentException("No genome in map");
+
+        int oldNumber = this.numberOfEachGenome.get(genome);
+        if(oldNumber == 1)
+            this.numberOfEachGenome.remove(genome);
+        else
+            this.numberOfEachGenome.put(genome, oldNumber-1);
+
+    }
+
+    public Genome mostFrequentGenome(){
+        Genome mostFrequentGenome = null;
+        int highestAmmount = 0;
+        for (Genome genome : this.numberOfEachGenome.keySet()) {
+            int ammount = this.numberOfEachGenome.get(genome);
+            if(ammount > highestAmmount){
+                highestAmmount = ammount;
+                mostFrequentGenome = genome;
+            }
+        }
+        return mostFrequentGenome;
+    }
+
+    public boolean isMostFrequentGenome(Genome genome){
+        return genome.equals(mostFrequentGenome());
+    }
+
+//    public void addGenome(Genome genome){
+//        int setID = numberOfSetContainingGenome(genome);
+//        if(setID == -1){
+//            Set<Genome> set = new TreeSet<>(Genome::compareTo);
+//            set.add(genome);
+//            this.genomesOfEachNumber.put(1, set);
+//        }
+//        else{
+//            removeGenome(genome);
+//
+//        }
+//    }
+//    public void removeGenome(Genome genome){
+//        int setID = numberOfSetContainingGenome(genome);
+//        if(this.genomesOfEachNumber.get(setID).size() == 1){
+//            this.genomesOfEachNumber.remove(setID);
+//        }
+//        else{
+//            this.genomesOfEachNumber.get(setID).remove(genome);
+//        }
+//    }
+//
+//    private int numberOfSetContainingGenome(Genome genome){ //-1 if not containig
+//        for (int i = 0; i < this.genomesOfEachNumber.size(); i++) {
+//            if (this.genomesOfEachNumber.get(i).contains(genome))
+//                return i;
+//        }
+//
+//        return -1;
+//    }
+
+
     private String generateString(){
         StringBuilder builder = new StringBuilder();
         builder.append("Epoch: " + this.epoch);
         builder.append("    Number of Animals: " + this.numberOfAnimals);
         builder.append("    Number of Plants: " + this.numberOfPlants);
         builder.append("    Average energy: " + this.epoch);
-        builder.append("    Average Lifespan: " + this.epoch);
-        builder.append("    Average Children: " + this.epoch);
+        builder.append("    Average Lifespan: " + getAverageLifespan());
+        builder.append("    Average Children: " + getAverageNumberOfChildren());
+        builder.append("    Most frequent Gene: " + this.mostFrequentGenome());
         builder.append("\n");
         return builder.toString();
     }

@@ -18,9 +18,10 @@ public class RectangularMap implements IPositionChangeObserver
 
     private JSONObject parameters;
 
-    private List<Animal> animalList = new ArrayList<>(); //separate list of animals allows to skip iterating over grass tiles
+    public List<Animal> animalList = new ArrayList<>(); //separate list of animals allows to skip iterating over grass tiles
     private Map<Vector2d, Tile> tilesOnMap = new LinkedHashMap<>();
     private int freeTiles;  //i have no idea what im doing
+    private int freeTilesOnJungle;  //i have no idea what im doing
 
     public MapStatistics mapStatistics = new MapStatistics();
 
@@ -68,6 +69,7 @@ public class RectangularMap implements IPositionChangeObserver
             return this.tilesOnMap.get(position);
     }
 
+    @Override
     public void elementPositionToBeChangedTo(AbstractMapElement element, Vector2d futurePosition) { //changes position of an element, asssumes calling method will change inner state
         Vector2d currentPosition = element.getPosition();
         if (futurePosition != null && !currentPosition.equals(futurePosition)) {
@@ -127,10 +129,12 @@ public class RectangularMap implements IPositionChangeObserver
     }
 
     public void placePlants() {
-        if (freeTiles > 0) {
+
+        if(freeTilesOnJungle > 0)
             new Grass(this, generateRandomUnoccupiedPosition(this.lowerJungleBoundary, this.upperJungleBoundary));
+        if(freeTiles - freeTilesOnJungle > 0)
             new Grass(this,generateRandomPositionWithException(this.lowerBoundary, this.upperBoundary, this.lowerJungleBoundary, this.upperJungleBoundary));
-        }
+
     }
 
     public void addObserver(IMapStateChangeObserver observer) {
@@ -148,20 +152,22 @@ public class RectangularMap implements IPositionChangeObserver
     }
 
     private void calculateMapParameters(double jungleRatio){
-        this.upperJungleBoundary = calculateJungleBoundaries(jungleRatio, true);
-        this.lowerJungleBoundary = calculateJungleBoundaries(jungleRatio, false);
+        this.upperJungleBoundary = calculateJungleBoundary(jungleRatio, true);
+        this.lowerJungleBoundary = calculateJungleBoundary(jungleRatio, false);
+
 
         this.freeTiles = (this.upperBoundary.x - this.lowerBoundary.x + 1) * (this.upperBoundary.y - this.lowerBoundary.y + 1);
+        this.freeTilesOnJungle = (this.upperJungleBoundary.x - this.lowerJungleBoundary.x + 1) * ( this.upperJungleBoundary.y - this.lowerJungleBoundary.y + 1);
     }
 
-    private Vector2d calculateJungleBoundaries(double jungleRatio, boolean calculateUpper) { //by default calculates lower
-        int lowerBoundary = calulateJungleBoundary(jungleRatio, this.upperBoundary.x, this.lowerBoundary.x, calculateUpper);
-        int upperBoundary = calulateJungleBoundary(jungleRatio, this.upperBoundary.y, this.lowerBoundary.y, calculateUpper);
+    private Vector2d calculateJungleBoundary(double jungleRatio, boolean calculateUpper) { //by default calculates lower
+        int lowerBoundary = calculateJungleBoundary(jungleRatio, this.upperBoundary.x, this.lowerBoundary.x, calculateUpper);
+        int upperBoundary = calculateJungleBoundary(jungleRatio, this.upperBoundary.y, this.lowerBoundary.y, calculateUpper);
 
         return new Vector2d(lowerBoundary, upperBoundary);
     }
 
-    private int calulateJungleBoundary(double jungleRatio, int upperBoundary, int lowerBoundary, boolean calculateUpper){
+    private int calculateJungleBoundary(double jungleRatio, int upperBoundary, int lowerBoundary, boolean calculateUpper){
         int boundaryCenter = (upperBoundary - lowerBoundary) / 2;
         int boundaryOffset = (int) Math.ceil(Math.sqrt(jungleRatio) * (upperBoundary - lowerBoundary) / 2);
         int boundary;
@@ -225,6 +231,8 @@ public class RectangularMap implements IPositionChangeObserver
         if (!tilesOnMap.containsKey(position)) {
             this.tilesOnMap.put(position, new Tile(this, position));
             this.freeTiles--;
+            if(position.precedes(this.upperJungleBoundary) && position.follows(this.lowerJungleBoundary))
+                this.freeTilesOnJungle--;
         }
         this.tilesOnMap.get(position).putOnTile(element);
     }
@@ -235,6 +243,8 @@ public class RectangularMap implements IPositionChangeObserver
         if (this.tilesOnMap.get(position).isEmpty()) {
             this.tilesOnMap.remove(position);
             this.freeTiles++;
+            if(position.precedes(this.upperJungleBoundary) && position.follows(this.lowerJungleBoundary))
+                this.freeTilesOnJungle++;
         }
     }
 

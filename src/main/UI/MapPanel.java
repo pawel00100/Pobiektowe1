@@ -24,13 +24,14 @@ class MapPanel extends JPanel implements IMapStateChangeObserver {
     private int widthInTiles;
     private int heightInTiles;
     private int tileSize;
+//    private Color chosen =
     private Color gravel = new Color(200, 150, 100);
     private Color gravel2 = new Color(194, 140, 86);
     private Color jungle1 = new Color(136, 161, 73);
     private Color jungle2 = new Color(130, 156, 71);
     private Color animalColor = Color.DARK_GRAY;
     private Color grassColor = new Color(2, 172, 24);
-    private Color chosenAnimalColor = Color.RED;
+    private Color chosenAnimalColor = new Color(227, 34, 36);
     private RectangularMap map;
 
     RepaintManager r = new RepaintManager();
@@ -46,7 +47,7 @@ class MapPanel extends JPanel implements IMapStateChangeObserver {
         this.heightInTiles = this.map.upperBoundary.y - this.map.lowerBoundary.y + 1;
         double heightToWidthRatio = (double) this.heightInTiles / this.widthInTiles;
 
-        int maxWindowSize = Math.min(360 + Math.max(widthInTiles, heightInTiles)*6, 1200); //scaling window size to the number of tiles with max limit
+        int maxWindowSize = Math.min(360 + Math.max(widthInTiles, heightInTiles)*6, 750); //scaling window size to the number of tiles with max limit
         if (heightToWidthRatio <= 1)
             this.tileSize = maxWindowSize / this.widthInTiles;
         else

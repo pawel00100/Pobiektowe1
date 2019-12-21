@@ -34,7 +34,8 @@ public class DetailsPanel extends JPanel implements IMapStateChangeObserver {
         BoxLayout boxlayout = new BoxLayout(this, BoxLayout.Y_AXIS);
         this.setLayout(boxlayout);
         this.add(panel);
-        this.add(new SingleGenomePanel(this.map));
+        this.add(new SingleGenomePanel(this.map, null, () -> (this.map.chosenAnimal != null) ? this.map.chosenAnimal.getGenome() : null));
+//        this.add(new SingleGenomePanel(this.map));
 
     }
 

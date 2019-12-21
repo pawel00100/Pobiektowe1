@@ -6,6 +6,7 @@ import main.map.RectangularMap;
 import java.util.*;
 
 public class Animal extends AbstractMapElement{
+    private RectangularMap map;
     private MapDirection currentDirection = MapDirection.NORTH;
     private int energy = 0;
     private int lifespan = 0;
@@ -28,10 +29,13 @@ public class Animal extends AbstractMapElement{
 
     public Animal(RectangularMap map, Vector2d position, Genome genome) {
         super(map);
-        this.appendEnergy(100);
-        this.position = staysOnMap(position);
-        map.place(this);
+        this.map = map;
         this.genome = genome;
+        this.appendEnergy(100);
+        this.position = checkCrossingBoundary(position);
+
+        this.map.place(this);
+        this.map.mapStatistics.addGenome(genome);
     }
 
     public Animal(RectangularMap map, Vector2d position, Animal parent1, Animal parent2){
@@ -73,6 +77,7 @@ public class Animal extends AbstractMapElement{
 
     public void onDeath(){
         setNumberOfChildren(0);
+        this.map.mapStatistics.removeGenome(this.genome);
     }
 
     public String toString() {
@@ -128,7 +133,7 @@ public class Animal extends AbstractMapElement{
     public void moveForward(){
         this.appendEnergy(-1);
         Vector2d futureVector = this.position.add(this.currentDirection.toUnitVector());
-        futureVector = staysOnMap(futureVector);
+        futureVector = checkCrossingBoundary(futureVector);
         positionChanged(futureVector);
         this.position = futureVector;
     }
@@ -178,7 +183,7 @@ public class Animal extends AbstractMapElement{
         }
     }
 
-    private Vector2d staysOnMap(Vector2d position){
+    private Vector2d checkCrossingBoundary(Vector2d position){
         if(position.x > this.map.upperBoundary.x)
             position = position.subtract( new Vector2d(this.map.upperBoundary.x + 1, 0) );
         if(position.y > this.map.upperBoundary.y)
