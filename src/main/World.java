@@ -21,10 +21,16 @@ public class World { ;
 
             generateAnimals(parameters.getInt("initialAnimals"), map1, map2);
 
-            new UI(map1, map2, parameters);
+            new UI(map1, parameters);
+            new UI(map2, parameters);
+//            new UI(map1, map2, parameters);
 //            parameters.put("isRunning",true);
 
-            new Run(map1, map2, parameters);
+            Thread t1 = new Thread(new Run(map1));
+            Thread t2 = new Thread(new Run(map2));
+            t1.start();
+            t2.start();
+
         }
         catch (Exception exception){
             System.out.println(exception.getMessage());

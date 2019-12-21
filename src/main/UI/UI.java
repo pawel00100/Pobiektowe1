@@ -8,12 +8,11 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class UI {
-    RectangularMap map1, map2;
+    RectangularMap map;
     JSONObject parameters;
     MapPanel mapPanel;
-    public UI(RectangularMap map1, RectangularMap map2, JSONObject parameters){
-        this.map1 = map1;
-        this.map2 = map2;
+    public UI(RectangularMap map, JSONObject parameters){
+        this.map = map;
         this.parameters = parameters;
 
 //        JFrame.setDefaultLookAndFeelDecorated(true);
@@ -26,24 +25,14 @@ public class UI {
 
 
 
-        frame.add(dualRunPanel());
+        frame.add(singleRunPanel());
         frame.pack();
         frame.setVisible(true);
 
     }
 
-    private JPanel dualRunPanel(){
-        JPanel panel = new JPanel();
-        BoxLayout boxlayout = new BoxLayout(panel, BoxLayout.X_AXIS);
-        panel.setLayout(boxlayout);
 
-        panel.add(singleRunPanel(map1));
-        panel.add(singleRunPanel(map2));
-
-        return panel;
-    }
-
-    private JPanel singleRunPanel(RectangularMap map){
+    private JPanel singleRunPanel(){
         JPanel panel = new JPanel();
         BoxLayout boxlayout = new BoxLayout(panel, BoxLayout.Y_AXIS);
 
@@ -51,8 +40,8 @@ public class UI {
 
         panel.setBorder(new EmptyBorder(new Insets(10,10,10,10)));
 
-        panel.add(new SettingsPanel(this.parameters, map));
-        panel.add(new MapPanel(map,this.parameters));
+        panel.add(new SettingsPanel(map));
+        panel.add(new MapPanel(map));
         panel.add(new StatusPanel(map));
         panel.add(new SingleGenomePanel(map, null,() -> map.mapStatistics.mostFrequentGenome()));
 

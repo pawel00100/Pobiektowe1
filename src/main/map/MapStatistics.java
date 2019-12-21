@@ -19,8 +19,7 @@ public class MapStatistics {
     private int deadAnimals = 0;
     private int numberOfChildrenOfAliveAnimals = 0;
 
-    public Map<Genome, Integer> numberOfEachGenome = new TreeMap<>();
-//    private  Map<Integer, Set<Genome>>  genomesOfEachNumber = new TreeMap<>();
+    private Map<Genome, Integer> numberOfEachGenome = new TreeMap<>();
 
     private StringBuilder history = new StringBuilder();
 
@@ -130,38 +129,6 @@ public class MapStatistics {
     public boolean isMostFrequentGenome(Genome genome){
         return genome.equals(mostFrequentGenome());
     }
-
-//    public void addGenome(Genome genome){
-//        int setID = numberOfSetContainingGenome(genome);
-//        if(setID == -1){
-//            Set<Genome> set = new TreeSet<>(Genome::compareTo);
-//            set.add(genome);
-//            this.genomesOfEachNumber.put(1, set);
-//        }
-//        else{
-//            removeGenome(genome);
-//
-//        }
-//    }
-//    public void removeGenome(Genome genome){
-//        int setID = numberOfSetContainingGenome(genome);
-//        if(this.genomesOfEachNumber.get(setID).size() == 1){
-//            this.genomesOfEachNumber.remove(setID);
-//        }
-//        else{
-//            this.genomesOfEachNumber.get(setID).remove(genome);
-//        }
-//    }
-//
-//    private int numberOfSetContainingGenome(Genome genome){ //-1 if not containig
-//        for (int i = 0; i < this.genomesOfEachNumber.size(); i++) {
-//            if (this.genomesOfEachNumber.get(i).contains(genome))
-//                return i;
-//        }
-//
-//        return -1;
-//    }
-
 
     private String generateString(){
         StringBuilder builder = new StringBuilder();

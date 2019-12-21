@@ -3,28 +3,12 @@ package main.runner;
 import main.map.RectangularMap;
 import org.json.JSONObject;
 
-public class Run {
-
-    public Run(RectangularMap map1, RectangularMap map2, JSONObject parameters) throws InterruptedException {
-        long lastStepTIme = System.currentTimeMillis();
-        while (true) {
-            if ((boolean) parameters.get("isRunning")) {
-                double runSpeed = (double) parameters.get("runSpeed");
-                int stepSize = (runSpeed > 40) ? (int)runSpeed / 20 : 1;
-
-                step(map1, stepSize);
-                step(map2, stepSize);
+public class Run implements Runnable{
+    RectangularMap map;
 
 
-                while (System.currentTimeMillis() - (long) (1000.0 / runSpeed * stepSize) < lastStepTIme) {
-                    Thread.sleep(1);
-                }
-
-            } else {
-                Thread.sleep(50);
-            }
-            lastStepTIme = System.currentTimeMillis();
-        }
+    public Run(RectangularMap map)  throws InterruptedException {
+        this.map = map;
 
     }
 
@@ -40,5 +24,31 @@ public class Run {
     }
 
 
+    @Override
+    public void run() {
+        try {
+            long lastStepTIme = System.currentTimeMillis();
+            while (true) {
+                if (this.map.isRunning) {
+                    double runSpeed = this.map.runSpeed;
+                    int stepSize = (runSpeed > 40) ? (int) runSpeed / 20 : 1;
+
+                    step(map, stepSize);
+
+
+                    while (System.currentTimeMillis() - (long) (1000.0 / runSpeed * stepSize) < lastStepTIme) {
+                        Thread.sleep(1);
+                    }
+
+                } else {
+                    Thread.sleep(50);
+                }
+
+                lastStepTIme = System.currentTimeMillis();
+            }
+        }
+        catch (Exception ignored){
+        };
+    }
 
 }

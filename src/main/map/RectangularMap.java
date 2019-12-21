@@ -15,6 +15,11 @@ public class RectangularMap implements IPositionChangeObserver
     public Animal chosenAnimal = null;
     public boolean isChosenAnimalAlive = false; //not sure if needed
     public int epochOfDeath = 0;
+    public boolean isRunning = false;
+    public boolean showMostFrequent = false;
+    public double runSpeed = 1.0;
+    public boolean locked = false;
+
 
     private JSONObject parameters;
 

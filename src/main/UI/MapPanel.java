@@ -26,16 +26,14 @@ class MapPanel extends JPanel implements IMapStateChangeObserver {
     private int heightInTiles;
     private int tileSize;
     private RectangularMap map;
-    private JSONObject parameters;
 
     RepaintManager r = new RepaintManager();
     private ArrayList<ArrayList<myButton>> buttons = new ArrayList<>();
 
-    MapPanel(RectangularMap map, JSONObject parameters) {
+    MapPanel(RectangularMap map) {
         super();
         this.map = map;
         this.map.addObserver(this);
-        this.parameters = parameters;
 
         //this section in code makes sure that each tile is square and neither width or height is above maxSize
         this.widthInTiles = this.map.upperBoundary.x - this.map.lowerBoundary.x + 1;
@@ -106,7 +104,7 @@ class MapPanel extends JPanel implements IMapStateChangeObserver {
                 color = ColorScheme.chosenAnimalColor;
 
             else if (map.isAnimalOnTile(tilePosition)) {
-                if(this.parameters.getBoolean("showMostFrequent") && ((Animal)this.map.getTile(tilePosition).getElementsByEnergy().get(0)).getGenome().equals(this.map.mapStatistics.mostFrequentGenome()))
+                if(this.map.showMostFrequent && ((Animal)this.map.getTile(tilePosition).getElementsByEnergy().get(0)).getGenome().equals(this.map.mapStatistics.mostFrequentGenome()))
                     color = ColorScheme.mostFrequentGenome;
                 else
                     color = colorBasedOnEnergy((Animal) this.map.getTile(tilePosition).getElementsByEnergy().get(0));

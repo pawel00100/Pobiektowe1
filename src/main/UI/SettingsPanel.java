@@ -12,18 +12,14 @@ import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 
 class SettingsPanel extends JPanel {
-    private JSONObject parameters;
     private RectangularMap map;
 
     private JLabel label;
     private JSlider slider;
 
-    SettingsPanel(JSONObject parameters, RectangularMap map){
+    SettingsPanel(RectangularMap map){
         super();
         this.map = map;
-        this.parameters = parameters;
-        this.parameters.put("runSpeed",1.0);
-        this.parameters.put("isRunning",false);
 
         JButton runButton=new JButton("run");
         JButton stopButton=new JButton("stop");
@@ -34,11 +30,10 @@ class SettingsPanel extends JPanel {
         this.slider = new JSlider(0,100,0);
         this.label = new JLabel(sliderValue());
 
-        this.parameters.put("showMostFrequent",false);
         this.slider.setMinorTickSpacing(10);
         this.slider.addChangeListener(this::stateChanged);
-        runButton.addActionListener(e -> this.parameters.put("isRunning",true));
-        stopButton.addActionListener(e -> this.parameters.put("isRunning",false));
+        runButton.addActionListener(e -> map.isRunning = true);
+        stopButton.addActionListener(e -> map.isRunning = false);
         saveButton.addActionListener(e -> map.mapStatistics.writeFile());
         showMostFrequentButton.addActionListener(this::onClick);
 //        slider.addChangeListener(e -> label.setText( sliderValue((JSlider)e.getSource())));
@@ -64,7 +59,7 @@ class SettingsPanel extends JPanel {
     private void stateChanged(ChangeEvent e)
     {
         this.label.setText( sliderValue());
-        this.parameters.put("runSpeed", sliderDoubleValue());
+        this.map.runSpeed = sliderDoubleValue();
     }
 
     private static ImageIcon createImageIcon(Color color, int width, int height) {
@@ -76,7 +71,7 @@ class SettingsPanel extends JPanel {
     }
 
     private void onClick(ActionEvent e) {
-        this.parameters.put("showMostFrequent",!this.parameters.getBoolean("showMostFrequent"));
+        this.map.showMostFrequent = !this.map.showMostFrequent;
         this.map.mapStateChanged();
 
     }
