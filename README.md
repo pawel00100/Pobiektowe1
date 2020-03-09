@@ -1,10 +1,13 @@
 # Pobiektowe1
 World simulation
+This desktop app simulates world with animals on it. Animals can eat grass to increase their energy level, move, reproduce giving part of its simple genome to the offspring.
 
-I believe all requirements were implemented
+Short video:
+https://youtu.be/22znvoxVjhc
+Colored bars represent genses inside a genome.
 
 
-Things not finished due to time comstraints:
+TODO:
 
 -Blocking main threads by Swing threads (this is why it is locked to 1000 runs / second - without UI it can easily run large map over 10000/sec)
 
