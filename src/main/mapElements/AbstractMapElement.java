@@ -12,7 +12,7 @@ public abstract class AbstractMapElement {
     }
 
     public Vector2d getPosition() {
-        return new Vector2d(this.position);
+        return new Vector2d(position);
     }
 
 

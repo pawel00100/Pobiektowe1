@@ -1,7 +1,8 @@
 package main.UI;
 
-import main.map.IMapStateChangeObserver;
+import main.map.Redrawable;
 import main.map.RectangularMap;
+import main.map.snapshots.MapSnapshotHolder;
 import main.mapElements.Genome;
 import main.mapElements.Vector2d;
 
@@ -10,7 +11,7 @@ import java.awt.*;
 
 import java.util.function.Supplier;
 
-public   class SingleGenomePanel extends JPanel implements IMapStateChangeObserver{
+public   class SingleGenomePanel extends JPanel implements Redrawable {
     private RectangularMap map; //can be removed if observer changed
     private Genome genome;
     private Color[] geneColors = {Color.YELLOW, Color.BLUE,Color.GREEN, Color.GRAY, Color.RED, Color.WHITE, Color.ORANGE, Color.CYAN};
@@ -18,13 +19,12 @@ public   class SingleGenomePanel extends JPanel implements IMapStateChangeObserv
     private int width = 400;
     private Supplier<Genome> genomeGetter;
 
-    SingleGenomePanel(RectangularMap map, Genome genome, Supplier<Genome> genomeGetter){
+    SingleGenomePanel(MapSnapshotHolder mapSnapshotHolder, Genome genome, Supplier<Genome> genomeGetter){
         super();
-        this.map = map;
-        this.map.addObserver(this);
+        map = mapSnapshotHolder.uiState.map;
         this.genome = genome;
         this.genomeGetter = genomeGetter;
-        this.setPreferredSize(new Dimension(this.width, this.height+10));
+        setPreferredSize(new Dimension(width, height+10));
     }
 
     @Override
@@ -36,7 +36,7 @@ public   class SingleGenomePanel extends JPanel implements IMapStateChangeObserv
     private void drawPanel(Graphics gAbstract){
         Graphics2D g = (Graphics2D) gAbstract;
 
-        if(this.genome == null)
+        if(genome == null)
             fill(g, Color.blue);
         else
             drawGenome(g);
@@ -44,13 +44,13 @@ public   class SingleGenomePanel extends JPanel implements IMapStateChangeObserv
 
     private void drawGenome(Graphics2D g){
         for (int j = 0; j < 32; j++) {
-            int gene = this.genome.getGene(j);
-            drawSquare(g, new Vector2d(j, 0), this.geneColors[gene], new Vector2d(this.width / 32, this.height));
+            int gene = genome.getGene(j);
+            drawSquare(g, new Vector2d(j, 0), geneColors[gene], new Vector2d(width / 32, height));
         }
     }
 
     private void fill(Graphics2D g, Color color){
-        g.fillRect(0, 0, this.width, this.height);
+        g.fillRect(0, 0, width, height);
     }
 
     private void drawSquare(Graphics2D g, Vector2d tilePosition, Color color, Vector2d size) {
@@ -61,8 +61,8 @@ public   class SingleGenomePanel extends JPanel implements IMapStateChangeObserv
     }
 
     @Override
-    public void mapStateChanged() {
-        this.genome = this.genomeGetter.get();
+    public void redraw() {
+        genome = genomeGetter.get();
         repaint();
     }
 }

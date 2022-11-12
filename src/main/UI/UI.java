@@ -1,21 +1,32 @@
 package main.UI;
 
 import main.map.RectangularMap;
-import org.json.JSONObject;
+import main.map.Redrawable;
+import main.map.snapshots.MapSnapshotHolder;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UI {
     private RectangularMap map;
 
-    public UI(RectangularMap map){
-        this.map = map;
+    public MapSnapshotHolder mapSnapshotHolder;
+    public UIState uiState;
+    private final List<Redrawable> redrawables = new ArrayList<>();
 
-        try{UIManager.setLookAndFeel(
-                UIManager.getSystemLookAndFeelClassName());}
-        catch (Exception ignored){}
+
+    public UI(RectangularMap map) {
+        mapSnapshotHolder = new MapSnapshotHolder(map, this::redraw);
+        uiState = mapSnapshotHolder.uiState;
+
+        try {
+            UIManager.setLookAndFeel(
+                    UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception ignored) {
+        }
 
         JFrame frame = new JFrame("Animal World");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -23,38 +34,49 @@ public class UI {
         frame.add(singleRunPanel());
         frame.pack();
         frame.setVisible(true);
-
     }
 
-    private JPanel leftPanel(){
+    private JPanel leftPanel() {
         JPanel panel = new JPanel();
-        panel.setBorder(new EmptyBorder(new Insets(10,10,10,10)));
+        panel.setBorder(new EmptyBorder(new Insets(10, 10, 10, 10)));
 
         BoxLayout boxlayout = new BoxLayout(panel, BoxLayout.Y_AXIS);
         panel.setLayout(boxlayout);
 
-        panel.add(new SettingsPanel(this.map));
-        panel.add(new MapPanel(this.map));
-        panel.add(new StatusPanel(this.map));
-        panel.add(new SingleGenomePanel(this.map, null,() -> this.map.mapStatistics.mostFrequentGenome()));
+        var settingsPanel = new SettingsPanel(mapSnapshotHolder, uiState);
+        var mapPanel = new MapPanel(mapSnapshotHolder, uiState);
+        var statusPanel = new StatusPanel(mapSnapshotHolder);
+        var singleGenomePanel = new SingleGenomePanel(mapSnapshotHolder, null, () -> mapSnapshotHolder.uiState.map.mapStatistics.mostFrequentGenome());
+
+        panel.add(settingsPanel);
+        panel.add(mapPanel);
+        panel.add(statusPanel);
+        panel.add(singleGenomePanel);
+
+        redrawables.addAll(List.of(statusPanel, mapPanel, singleGenomePanel));
 
         return panel;
     }
 
-    private JPanel rightPanel(){
+    private JPanel rightPanel() {
         JPanel panel = new JPanel();
-        panel.setBorder(new EmptyBorder(new Insets(10,10,10,10)));
+        panel.setBorder(new EmptyBorder(new Insets(10, 10, 10, 10)));
 
         BoxLayout boxlayout = new BoxLayout(panel, BoxLayout.Y_AXIS);
         panel.setLayout(boxlayout);
 
-        panel.add(new GenomePanel(this.map));
-        panel.add(new DetailsPanel(this.map));
+        var genomePanel = new GenomePanel(mapSnapshotHolder);
+        var detailsPanel = new DetailsPanel(mapSnapshotHolder);
+
+        panel.add(genomePanel);
+        panel.add(detailsPanel);
+
+        redrawables.addAll(List.of(genomePanel, detailsPanel));
 
         return panel;
     }
 
-    private JPanel singleRunPanel(){
+    private JPanel singleRunPanel() {
         JPanel panel = new JPanel();
         BoxLayout boxlayout = new BoxLayout(panel, BoxLayout.X_AXIS);
 
@@ -66,4 +88,7 @@ public class UI {
         return panel;
     }
 
+    public void redraw() {
+        redrawables.forEach(Redrawable::redraw);
+    }
 }

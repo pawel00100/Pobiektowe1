@@ -5,6 +5,8 @@
     "jungleRatio" : 0.2,
     "startEnergy": 100,
     "moveEnergy": 1,
-    "plantEnergy" : 40
+    "plantEnergy" : 40,
+    "plantsPerTick": 4,
+    "saveHistory" : false
 }
 

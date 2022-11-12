@@ -1,12 +1,13 @@
 package main.UI;
 
-import main.map.IMapStateChangeObserver;
+import main.map.Redrawable;
 import main.map.RectangularMap;
+import main.map.snapshots.MapSnapshotHolder;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class StatusPanel extends JPanel implements IMapStateChangeObserver {
+public class StatusPanel extends JPanel implements Redrawable {
     private JLabel animalsOnMapLabel;
     private JLabel plantsOnMapLabel;
     private JLabel epochLabel;
@@ -15,40 +16,39 @@ public class StatusPanel extends JPanel implements IMapStateChangeObserver {
     private JLabel averageNumberOfChildrenLabel;
     private RectangularMap map;
 
-    StatusPanel(RectangularMap map){
+    StatusPanel(MapSnapshotHolder mapSnapshotHolder){
         super();
-        this.map = map;
-        this.map.addObserver(this);
+        map = mapSnapshotHolder.uiState.map;
 
         createLabels();
 
         GridLayout grid = new GridLayout(2, 0);
-        this.setLayout(grid);
+        setLayout(grid);
     }
 
     private void createLabels(){
-        this.animalsOnMapLabel = createLabel("Animals: 0");
-        this.plantsOnMapLabel = createLabel("       Plants: 0");
-        this.epochLabel = createLabel("       Epoch: 0");
-        this.averageEnergyLabel = createLabel("       Average Energy: 0");
-        this.averageLifespanLabel = createLabel("       Average Lifespan: 0");
-        this.averageNumberOfChildrenLabel = createLabel("       Average Children: 0");
+        animalsOnMapLabel = createLabel("Animals: 0");
+        plantsOnMapLabel = createLabel("       Plants: 0");
+        epochLabel = createLabel("       Epoch: 0");
+        averageEnergyLabel = createLabel("       Average Energy: 0");
+        averageLifespanLabel = createLabel("       Average Lifespan: 0");
+        averageNumberOfChildrenLabel = createLabel("       Average Children: 0");
     }
 
     private JLabel createLabel(String text){
         JLabel label = new JLabel(text);
-        this.add(label);
+        add(label);
         return label;
     }
 
     @Override
-    public void mapStateChanged() {
-        this.animalsOnMapLabel.setText("Animals: " + this.map.mapStatistics.getNumberOfAnimals());
-        this.plantsOnMapLabel.setText("       Plants: " + this.map.mapStatistics.getNumberOfPlants());
-        this.epochLabel.setText("       Epoch: " + this.map.mapStatistics.getEpoch());
-        this.averageEnergyLabel.setText("       Average Energy: " + this.map.mapStatistics.getAverageEnergy());
-        this.averageLifespanLabel.setText("       Average Lifespan: " + this.map.mapStatistics.getAverageLifespan());
-        this.averageNumberOfChildrenLabel.setText("       Average Children: " + formatToString(this.map.mapStatistics.getAverageNumberOfChildren()));
+    public void redraw() {
+        animalsOnMapLabel.setText("Animals: " + map.mapStatistics.getNumberOfAnimals());
+        plantsOnMapLabel.setText("       Plants: " + map.mapStatistics.getNumberOfPlants());
+        epochLabel.setText("       Epoch: " + map.mapStatistics.getEpoch());
+        averageEnergyLabel.setText("       Average Energy: " + map.mapStatistics.getAverageEnergy());
+        averageLifespanLabel.setText("       Average Lifespan: " + map.mapStatistics.getAverageLifespan());
+        averageNumberOfChildrenLabel.setText("       Average Children: " + formatToString(map.mapStatistics.getAverageNumberOfChildren()));
     }
 
     private String formatToString(double input){

@@ -14,16 +14,12 @@ public class Vector2d {
         this.y = vec.y;
     }
 
-    public String toString() {
-        return "(" + this.x + "," + this.y + ")";
-    }
-
     public boolean precedes(Vector2d other) {
-        return (this.x <= other.x && this.y <= other.y);
+        return (x <= other.x && y <= other.y);
     }
 
     public boolean follows(Vector2d other) {
-        return (this.x >= other.x && this.y >= other.y);
+        return (x >= other.x && y >= other.y);
     }
 
     public Vector2d upperRight(Vector2d other) {
@@ -39,32 +35,34 @@ public class Vector2d {
     }
 
     public Vector2d add(Vector2d other) {
-        return new Vector2d(this.x + other.x, this.y + other.y);
+        return new Vector2d(x + other.x, y + other.y);
     }
 
     public Vector2d subtract(Vector2d other) {
-        return new Vector2d(this.x - other.x, this.y - other.y);
+        return new Vector2d(x - other.x, y - other.y);
     }
 
     public boolean equals(Object other){
         if (this == other)
             return true;
-        if (!(other instanceof Vector2d))
+        if (!(other instanceof Vector2d that))
             return false;
-        Vector2d that = (Vector2d) other;
-        return (this.x == that.x && this.y == that.y);
+        return (x == that.x && y == that.y);
     }
 
     public Vector2d opposite() {
-        return new Vector2d(-1 * this.x, -1 * this.y);
+        return new Vector2d(-1 * x, -1 * y);
     }
 
+    public String toString() {
+        return "(" + x + "," + y + ")";
+    }
 
     @Override
     public int hashCode() {
         int hash = 13;
-        hash += this.x * 31;
-        hash += this.y * 17;
+        hash += x * 31;
+        hash += y * 17;
         return hash;
     }
 }

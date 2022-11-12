@@ -32,26 +32,26 @@ public class Genome implements Comparable {
 
         genes.sort(Integer::compareTo);
         this.genes = genes;
-        this.genesAsNumber = convertToNumber();
+        genesAsNumber = convertToNumber();
     }
 
     public Genome(List<Integer> genes){
         this.genes = genes;
-        addMissingGenes(this.genes);
-        this.genesAsNumber = convertToNumber();
+        addMissingGenes(genes);
+        genesAsNumber = convertToNumber();
 
     }
 
     public Genome(Genome parent1, Genome parent2) {
-        this.genes = generateGenesFromTwoParents(parent1,parent2);
-        this.genesAsNumber = convertToNumber();
+        genes = generateGenesFromTwoParents(parent1,parent2);
+        genesAsNumber = convertToNumber();
     }
 
     @Override
     public String toString(){
-        String string =  this.genes.get(0).toString();
+        String string =  genes.get(0).toString();
         for (int i = 1; i < 32; i++) {
-            string += this.genes.get(i).toString();
+            string += genes.get(i).toString();
         }
     return string;
     }
@@ -60,21 +60,21 @@ public class Genome implements Comparable {
     public boolean equals(Object genome2){
         if(genome2 == null) //delete and chceck if works checking most frequent
             return false;
-        if(this.genes.equals(genome2))
+        if(genes.equals(genome2))
             return true;
         if(!(genome2 instanceof Genome))
             return false;
-        return this.genes.equals(((Genome) genome2).genes);
+        return genes.equals(((Genome) genome2).genes);
     }
 
     public int getGene(int num){
-        return this.genes.get(num);
+        return genes.get(num);
     }
 
     private long convertToNumber(){
         long number = 0;
         for (int i = 0; i < 32; i++) {
-            number += Math.round(Math.pow(10, 2* (7 - this.genes.get(i))));
+            number += Math.round(Math.pow(10, 2* (7 - genes.get(i))));
         }
         return number;
     }
@@ -203,6 +203,6 @@ public class Genome implements Comparable {
         if (this == o)
             return 0;
         Genome comparedGenome = (Genome) o;
-        return Long.compare(this.genesAsNumber, comparedGenome.genesAsNumber);
+        return Long.compare(genesAsNumber, comparedGenome.genesAsNumber);
     }
 }

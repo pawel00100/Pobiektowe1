@@ -2,14 +2,16 @@ package main;
 
 import main.map.RectangularMap;
 import main.mapElements.Animal;
-import main.UI.UI;
 import main.mapElements.Genome;
 import main.mapElements.Vector2d;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Random;
 
-public class World { ;
+public class World {
+    private static final Random random = new Random();
+
     public static void main(String[] Argc) {
         try {
             JSONObject parameters = new Parser().obj;
@@ -25,14 +27,13 @@ public class World { ;
             t1.start();
             t2.start();
 
-        }
-        catch (IOException | InterruptedException exception){
+        } catch (IOException exception) {
             System.out.println(exception.getMessage());
         }
 
     }
 
-    private static void generateAnimals(int number, RectangularMap map1, RectangularMap map2){
+    private static void generateAnimals(int number, RectangularMap map1, RectangularMap map2) {
         for (int i = 0; i < number; i++) {
             Vector2d position = generateRandomPosition(map1);
             Genome genome = new Genome();
@@ -41,10 +42,10 @@ public class World { ;
         }
     }
 
-    private static Vector2d generateRandomPosition(RectangularMap map){
-        int xOffset = (int) ((map.upperBoundary.x - map.lowerBoundary.x + 1) * Math.random());
-        int yOffset = (int) ((map.upperBoundary.y - map.lowerBoundary.y + 1) * Math.random());
-        return new Vector2d(xOffset + map.lowerBoundary.x, yOffset + map.lowerBoundary.y);
+    private static Vector2d generateRandomPosition(RectangularMap map) {
+        int x = random.nextInt(map.lowerBoundary.x, map.upperBoundary.x + 1);
+        int y = random.nextInt(map.lowerBoundary.y, map.upperBoundary.y + 1);
+        return new Vector2d(x, y);
     }
 }
 

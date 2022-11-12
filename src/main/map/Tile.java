@@ -23,53 +23,53 @@ public class Tile {
     }
 
     void eatAndReproduce(){
-        if(this.numberOfAnimals >= 1 && isGrassOnTile()){
+        if(numberOfAnimals >= 1 && isGrassOnTile()){
             eatGrass();
         }
 
-        if(this.numberOfAnimals >= 2 && ((Animal)(getElementsByEnergy().get(1))).getEnergy() >= 50) {
+        if(numberOfAnimals >= 2 && ((Animal)(getElementsByEnergy().get(1))).getEnergy() >= 50) {
             spawnChild((Animal)(getElementsByEnergy().get(0)), (Animal)(getElementsByEnergy().get(1)));
 
         }
     }
 
     public void putOnTile(AbstractMapElement element){
-        this.elementsOnTile.add(element);
-        this.elementsOnTile.sort(this::compareElements);
+        elementsOnTile.add(element);
+        elementsOnTile.sort(this::compareElements);
         if (element instanceof Animal)
-            this.numberOfAnimals++;
+            numberOfAnimals++;
     }
 
     public void removeFromTile(AbstractMapElement element){
-        this.elementsOnTile.remove(element);
+        elementsOnTile.remove(element);
         if (element instanceof Animal)
-            this.numberOfAnimals--;
+            numberOfAnimals--;
     }
 
     public boolean isEmpty(){
-        return this.elementsOnTile.isEmpty();
+        return elementsOnTile.isEmpty();
     }
 
     public boolean isElementOnTile(AbstractMapElement element){
-        return this.elementsOnTile.contains(element);
+        return elementsOnTile.contains(element);
     }
 
     public boolean isGrassOnTile(){
-        for (AbstractMapElement element : this.elementsOnTile)
+        for (AbstractMapElement element : elementsOnTile)
             if (element instanceof Grass)
                 return true;
         return false;
     }
 
     public boolean isAnimalOnTile(){
-        for (AbstractMapElement element : this.elementsOnTile)
+        for (AbstractMapElement element : elementsOnTile)
             if (element instanceof Animal)
                 return true;
         return false;
     }
 
     public List<AbstractMapElement> getElementsByEnergy(){
-        return this.elementsOnTile;
+        return elementsOnTile;
     }
 
     public Animal getStrongestAnimal(){
@@ -82,7 +82,7 @@ public class Tile {
     private List<Animal> getStrongestAnimals(){
         List<Animal> list = new ArrayList<>();
         int i = 0;
-        while(compareElements(this.elementsOnTile.get(i), this.getStrongestAnimal()) == 0 ) {
+        while(compareElements(elementsOnTile.get(i), getStrongestAnimal()) == 0 ) {
             list.add((Animal) getElementsByEnergy().get(i));
             i++;
         }
@@ -90,7 +90,7 @@ public class Tile {
     }
 
     private void eatGrass(){
-        int energy = this.map.parameters.getInt("plantEnergy");
+        int energy = map.parameters.getInt("plantEnergy");
 
         for(Animal animal : getStrongestAnimals())
             animal.appendEnergy(energy/getStrongestAnimals().size());
@@ -98,9 +98,9 @@ public class Tile {
     }
 
     private void removeGrass(){
-        for (AbstractMapElement element : this.elementsOnTile)
+        for (AbstractMapElement element : elementsOnTile)
             if (element instanceof Grass){
-                this.map.remove(element);
+                map.remove(element);
                 return;
             }
     }
@@ -111,17 +111,15 @@ public class Tile {
         parent1.appendEnergy(-energyTransfer1);
         parent2.appendEnergy(-energyTransfer2);
         int childEnergy = energyTransfer1 + energyTransfer2;
-        Vector2d childPosition = this.tilePosition.add(MapDirection.generateRandomDirection().toUnitVector());
-        Animal child = new Animal(this.map, childPosition, parent1, parent2);
-//        Animal child = new Animal(this.map, this.tilePosition);
+        Vector2d childPosition = tilePosition.add(MapDirection.generateRandomDirection().toUnitVector());
+        Animal child = new Animal(map, childPosition, parent1, parent2);
+//        Animal child = new Animal(map, tilePosition);
         child.setEnergy(childEnergy);
     }
 
     private int compareElements(Object o1, Object o2) {
-        if(!(o1 instanceof AbstractMapElement) || !(o2 instanceof AbstractMapElement))
+        if(!(o1 instanceof AbstractMapElement element1) || !(o2 instanceof AbstractMapElement element2))
             throw new IllegalArgumentException("comparing not map element");
-        AbstractMapElement element1 = (AbstractMapElement) o1;
-        AbstractMapElement element2 = (AbstractMapElement) o2;
         if(!(element1 instanceof Animal)  && !(element2 instanceof Animal))
             return 0;
         if(!(element1 instanceof Animal))

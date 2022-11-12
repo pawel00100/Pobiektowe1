@@ -19,6 +19,6 @@ public class Parser {
         }
         reader.close();
 
-        this.obj = new JSONObject(str);
+        obj = new JSONObject(str);
     }
 }

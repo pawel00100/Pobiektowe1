@@ -1,16 +1,17 @@
 package main;
 
 import main.UI.UI;
+import main.UI.UIState;
 import main.map.RectangularMap;
 import org.json.JSONObject;
 
 public class Run implements Runnable{
     RectangularMap map;
+    UIState uiState;
 
 
-    public Run(RectangularMap map)  throws InterruptedException {
+    public Run(RectangularMap map) {
         this.map = map;
-
     }
 
     private void step(RectangularMap map, int stepSize){
@@ -20,6 +21,10 @@ public class Run implements Runnable{
             map.eatAndReproduce();
             map.placePlants();
             map.mapStatistics.updateEpoch();
+
+            if (this.map.parameters.getBoolean("saveHistory")) {
+                uiState.mapStatisticsTextHistory.updateEpoch(map.mapStatistics);
+            }
         }
         map.mapStateChanged();
     }
@@ -28,12 +33,13 @@ public class Run implements Runnable{
     @Override
     public void run() {
         try {
-            new UI(map);
+            var ui = new UI(map);
+            uiState = ui.uiState;
             long lastStepTIme = System.currentTimeMillis();
             while (true) {
-                if (this.map.isRunning) {
-                    double runSpeed = this.map.runSpeed;
-                    int stepSize = (runSpeed > 40) ? (int) runSpeed / 10 : 1;
+                if (uiState.isRunning()) {
+                    double runSpeed = uiState.getRunSpeed();
+                    int stepSize = (runSpeed > 4000) ? (int) runSpeed / 1000 : 1;
 
                     step(map, stepSize);
 
@@ -48,9 +54,9 @@ public class Run implements Runnable{
 
                 lastStepTIme = System.currentTimeMillis();
             }
+        } catch (InterruptedException ignored) {
+            Thread.currentThread().interrupt();
         }
-        catch (InterruptedException ignored){
-        };
     }
 
 }

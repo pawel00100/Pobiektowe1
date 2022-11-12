@@ -6,6 +6,8 @@ import main.map.RectangularMap;
 import java.util.*;
 
 public class Animal extends AbstractMapElement{
+    private static final Random random = new Random();
+
     private RectangularMap map;
     private MapDirection currentDirection = MapDirection.NORTH;
     private int energy = 0;
@@ -25,11 +27,11 @@ public class Animal extends AbstractMapElement{
         super(map);
         this.map = map;
         this.genome = genome;
-        this.appendEnergy(this.map.parameters.getInt("startEnergy"));
+        appendEnergy(map.parameters.getInt("startEnergy"));
         this.position = checkCrossingBoundary(position);
 
-        this.map.place(this);
-        this.map.mapStatistics.addGenome(genome);
+        map.place(this);
+        map.mapStatistics.addGenome(genome);
     }
 
     public Animal(RectangularMap map, Vector2d position, Animal parent1, Animal parent2){
@@ -40,9 +42,9 @@ public class Animal extends AbstractMapElement{
         parent1.numberOfChildrenSinceChoosing++;
         parent2.numberOfChildrenSinceChoosing++;
 
-        if((parent1.greatestAncestor == map.chosenAnimal || parent2.greatestAncestor == map.chosenAnimal) && map.chosenAnimal != null ){
-            addThisToList(map.chosenAnimal.descendantsOfChosenAnimal);
-            this.greatestAncestor = map.chosenAnimal;
+        if( map.uiStateTemp.getChosenAnimal() != null && (parent1.greatestAncestor == map.uiStateTemp.getChosenAnimal() || parent2.greatestAncestor == map.uiStateTemp.getChosenAnimal())){
+            addThisToList(map.uiStateTemp.getChosenAnimal().descendantsOfChosenAnimal);
+            greatestAncestor = map.uiStateTemp.getChosenAnimal();
         }
     }
 
@@ -55,69 +57,69 @@ public class Animal extends AbstractMapElement{
     }
 
     public String toString() {
-        return this.currentDirection.toShortString();
+        return currentDirection.toShortString();
     }
 
     public int getEnergy(){
-        return this.energy;
+        return energy;
     }
 
     public int getLifespan(){
-        return this.lifespan;
+        return lifespan;
     }
 
     public int getNumberOfChildrenSinceChoosing(){
-        return this.numberOfChildrenSinceChoosing;
+        return numberOfChildrenSinceChoosing;
     }
 
     public int getNumberOfDescendants(){
-        return this.descendantsOfChosenAnimal.size();
+        return descendantsOfChosenAnimal.size();
     }
 
     public Genome getGenome(){
-        return this.genome;
+        return genome;
     }
 
-    public void setEnergy(int energy){
-        int startingEnergy = this.energy;
-        this.energy = Math.min(energy, 250);
-        this.energyChanged(this.energy - startingEnergy);
+    public void setEnergy(int newEnergy){
+        int startingEnergy = energy;
+        energy = Math.min(newEnergy, 250);
+        energyChanged(energy - startingEnergy);
     }
 
-    public void appendEnergy(int energy){
-        int startingEnergy = this.energy;
-        this.energy = Math.min(this.energy + energy, 250);
-        this.energyChanged(this.energy - startingEnergy);
+    public void appendEnergy(int newEnergy){
+        int startingEnergy = energy;
+        energy = Math.min(energy + newEnergy, 250);
+        energyChanged(energy - startingEnergy);
     }
 
     public void move(){
         generateDirection();
         moveForward();
-        this.lifespan++;
+        lifespan++;
     }
 
     public void setTracked(){
-        this.greatestAncestor = this;
-        this.numberOfChildrenSinceChoosing = 0;
+        greatestAncestor = this;
+        numberOfChildrenSinceChoosing = 0;
     }
 
     public void addObserver(IPositionChangeObserver observer){
-        this.positionChangeObservers.add(observer);
+        positionChangeObservers.add(observer);
     }
 
     public void removeObserver(IPositionChangeObserver observer){
-        this.positionChangeObservers.remove(observer);
+        positionChangeObservers.remove(observer);
     }
 
     public void onDeath(){
         setNumberOfChildren(0);
-        this.map.mapStatistics.removeGenome(this.genome);
+        map.mapStatistics.removeGenome(genome);
     }
 
     private void generateDirection(){
-        int geneNumber = (int) Math.floor(Math.random() * 32);
-        int rotationNumber = this.genome.getGene(geneNumber);
-        this.currentDirection = this.currentDirection.rotateBy(rotationNumber);
+        int geneNumber = random.nextInt(32);
+        int rotationNumber = genome.getGene(geneNumber);
+        currentDirection = currentDirection.rotateBy(rotationNumber);
     }
 
     private void addThisToList(ArrayList<Animal> list){
@@ -126,43 +128,43 @@ public class Animal extends AbstractMapElement{
     }
 
     private void changeNumberOfChildren(int numberOfChildrenChange){
-        this.numberOfChildren += numberOfChildrenChange;
-        this.map.animalNumberOfChildrenChanged(numberOfChildrenChange);
+        numberOfChildren += numberOfChildrenChange;
+        map.animalNumberOfChildrenChanged(numberOfChildrenChange);
     }
 
     private void setNumberOfChildren(int numberOfChildren){
-        int change = numberOfChildren - this.numberOfChildren;
+        int change = this.numberOfChildren - numberOfChildren;
         changeNumberOfChildren(change);
     }
 
     private void energyChanged(int energyChange){
-        this.map.animalEnergyChanged(energyChange);
+        map.animalEnergyChanged(energyChange);
     }
 
     private void positionChanged(Vector2d newPosition){
-        for (IPositionChangeObserver observer : this.positionChangeObservers) {
+        for (IPositionChangeObserver observer : positionChangeObservers) {
             observer.elementPositionToBeChangedTo(this, newPosition);
         }
     }
 
     private void moveForward(){
-        this.appendEnergy(-this.map.parameters.getInt("moveEnergy"));
-        Vector2d futureVector = this.position.add(this.currentDirection.toUnitVector());
+        appendEnergy(-map.parameters.getInt("moveEnergy"));
+        Vector2d futureVector = position.add(currentDirection.toUnitVector());
         futureVector = checkCrossingBoundary(futureVector);
         positionChanged(futureVector);
-        this.position = futureVector;
+        position = futureVector;
     }
 
 
     private Vector2d checkCrossingBoundary(Vector2d position){
-        if(position.x > this.map.upperBoundary.x)
-            position = position.subtract( new Vector2d(this.map.upperBoundary.x + 1, 0) );
-        if(position.y > this.map.upperBoundary.y)
-            position = position.subtract( new Vector2d(0, this.map.upperBoundary.y + 1) );
-        if(position.x < this.map.lowerBoundary.x)
-            position = position.add( new Vector2d(this.map.upperBoundary.x + 1, 0) );
-        if(position.y < this.map.lowerBoundary.y)
-            position = position.add( new Vector2d(0, this.map.upperBoundary.y + 1) );
+        if(position.x > map.upperBoundary.x)
+            position = position.subtract( new Vector2d(map.upperBoundary.x + 1, 0) );
+        if(position.y > map.upperBoundary.y)
+            position = position.subtract( new Vector2d(0, map.upperBoundary.y + 1) );
+        if(position.x < map.lowerBoundary.x)
+            position = position.add( new Vector2d(map.upperBoundary.x + 1, 0) );
+        if(position.y < map.lowerBoundary.y)
+            position = position.add( new Vector2d(0, map.upperBoundary.y + 1) );
 
         return position;
     }

@@ -1,6 +1,7 @@
 package main.UI;
 
 import main.map.RectangularMap;
+import main.map.snapshots.MapSnapshotHolder;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -10,44 +11,47 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 
 class SettingsPanel extends JPanel {
-    private RectangularMap map;
+    private MapSnapshotHolder mapSnapshotHolder;
+    private UIState uiState;
+
 
     private JLabel label;
     private JSlider slider;
 
-    SettingsPanel(RectangularMap map) {
+    SettingsPanel(MapSnapshotHolder mapSnapshotHolder, UIState uiState) {
         super();
-        this.map = map;
+        this.mapSnapshotHolder = mapSnapshotHolder;
+        this.uiState = uiState;
 
         createComponents();
 
-        this.add(this.slider);
-        this.add(this.label);
-        this.setPreferredSize(new Dimension(400,50));
+        add(slider);
+        add(label);
+        setPreferredSize(new Dimension(500,50));
     }
 
     private void createComponents() {
-        createNewButton("run", e -> this.map.isRunning = true);
-        createNewButton("stop", e -> this.map.isRunning = false);
-        createNewButton("save", e -> this.map.mapStatistics.writeFile());
-        createNewButton("Show most frequent", this::onClick);
+        createNewButton("run", e -> uiState.setSimulationRunning(true));
+        createNewButton("stop", e -> uiState.setSimulationRunning(false));
+        createNewButton("save", e -> uiState.writeFile());
+        createNewButton("Show most frequent", this::onMostFrequentButtonClick);
 
-        this.slider = new JSlider(0,100,0);
-        this.label = new JLabel(sliderValue());
+        slider = new JSlider(0,100,0);
+        label = new JLabel(sliderValue());
 
-        this.slider.setMinorTickSpacing(10);
-        this.slider.addChangeListener(this::stateChanged);
+        slider.setMinorTickSpacing(1);
+        slider.addChangeListener(this::stateChanged);
     }
 
     private void createNewButton(String text, ActionListener l){
         JButton button = new JButton(text);
         button.addActionListener(l);
-        this.add(button);
+        add(button);
     }
 
     private double sliderDoubleValue(){
-        int input = this.slider.getValue(); //input 0 to 100
-        return Math.pow(10, ( (double) input / 100.0 * 3)); //logarithmic slider 1 to 1000
+        int input = slider.getValue(); //input 0 to 100
+        return Math.pow(10, ( (double) input / 100.0 * 6)); //logarithmic slider 1 to 100000
     }
 
     private String sliderValue(){
@@ -56,13 +60,12 @@ class SettingsPanel extends JPanel {
 
     private void stateChanged(ChangeEvent e)
     {
-        this.label.setText( sliderValue());
-        this.map.runSpeed = sliderDoubleValue();
+        label.setText( sliderValue());
+        uiState.setRunSpeed(sliderDoubleValue());
     }
 
-    private void onClick(ActionEvent e) {
-        this.map.showMostFrequent = !this.map.showMostFrequent;
-        this.map.mapStateChanged();
+    private void onMostFrequentButtonClick(ActionEvent e) {
+        uiState.clickedOnMostFrequentButton();
 
     }
 
