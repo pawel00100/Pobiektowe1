@@ -1,7 +1,5 @@
 package main.map.statistics;
 
-import main.map.statistics.MapStatistics;
-
 import java.io.FileWriter;
 import java.io.IOException;
 

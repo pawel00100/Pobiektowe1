@@ -9,20 +9,20 @@ import main.mapElements.Vector2d;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
 class GenomePanel extends JPanel implements Redrawable {
-    private RectangularMap map;
     private Color[] geneColors = {Color.YELLOW, Color.BLUE,Color.GREEN, Color.GRAY, Color.RED, Color.WHITE, Color.ORANGE, Color.CYAN};
     private int height = 550;
     private int width = 400;
     private MapSnapshotHolder mapSnapshotHolder;
 
+    private CompletableFuture<Void>  completableFuture;
 
     GenomePanel(MapSnapshotHolder mapSnapshotHolder){
         super();
-        map = mapSnapshotHolder.uiState.map;
         this.mapSnapshotHolder = mapSnapshotHolder;
         setPreferredSize(new Dimension(width, height));
     }
@@ -31,21 +31,22 @@ class GenomePanel extends JPanel implements Redrawable {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         drawPanel(g);
+        if ( completableFuture != null) {
+            completableFuture.complete(null);
+        }
     }
 
     private void drawPanel(Graphics gAbstract) {
         Graphics2D g = (Graphics2D) gAbstract;
-        List<Genome> l = new ArrayList<>();
 
-        for (Animal animal : map.animalList)
-            l.add(animal.getGenome());
+        var snapshot = mapSnapshotHolder.getMapSnapshot();
 
-        l.sort(Genome::compareTo);
+        List<Genome> genomes = snapshot.getSortedGenomeList();
 
-        for (int i = 0; i < map.mapStatistics.getNumberOfAnimals(); i++)
-            for (int j = 0; j < 32; j++){
-                int gene = l.get(i).getGene(j);
-                drawSquare(g, new Vector2d(j,i), geneColors[gene], new Vector2d(width/32,height/map.mapStatistics.getNumberOfAnimals()));
+        for (int i = 0; i < snapshot.getNumberOfAnimals(); i++)
+            for (int j = 0; j < 32; j++) {
+                int gene = genomes.get(i).getGene(j);
+                drawSquare(g, new Vector2d(j, i), geneColors[gene], new Vector2d(width / 32, height / snapshot.getNumberOfAnimals()));
             }
     }
 
@@ -57,7 +58,9 @@ class GenomePanel extends JPanel implements Redrawable {
     }
 
     @Override
-    public void redraw() {
+    public Future<Void> redraw() {
         repaint();
+        completableFuture = new CompletableFuture<>();
+        return completableFuture;
     }
 }

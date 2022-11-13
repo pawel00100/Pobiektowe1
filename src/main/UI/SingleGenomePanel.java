@@ -9,6 +9,8 @@ import main.mapElements.Vector2d;
 import javax.swing.*;
 import java.awt.*;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 import java.util.function.Supplier;
 
 public   class SingleGenomePanel extends JPanel implements Redrawable {
@@ -61,8 +63,9 @@ public   class SingleGenomePanel extends JPanel implements Redrawable {
     }
 
     @Override
-    public void redraw() {
+    public Future<Void> redraw() {
         genome = genomeGetter.get();
         repaint();
+        return CompletableFuture.completedFuture(null);
     }
 }

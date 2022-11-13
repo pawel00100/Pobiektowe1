@@ -9,6 +9,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class UI {
     private RectangularMap map;
@@ -46,7 +47,7 @@ public class UI {
         var settingsPanel = new SettingsPanel(mapSnapshotHolder, uiState);
         var mapPanel = new MapPanel(mapSnapshotHolder, uiState);
         var statusPanel = new StatusPanel(mapSnapshotHolder);
-        var singleGenomePanel = new SingleGenomePanel(mapSnapshotHolder, null, () -> mapSnapshotHolder.uiState.map.mapStatistics.mostFrequentGenome());
+        var singleGenomePanel = new SingleGenomePanel(mapSnapshotHolder, null, () -> mapSnapshotHolder.getMapSnapshot().mapStatistics.mostFrequentGenome());
 
         panel.add(settingsPanel);
         panel.add(mapPanel);
@@ -89,6 +90,16 @@ public class UI {
     }
 
     public void redraw() {
-        redrawables.forEach(Redrawable::redraw);
+        redrawables.stream()
+                .map(Redrawable::redraw)
+                .forEach(f -> {
+                    try {
+                        f.get();
+                    } catch (InterruptedException ignored) {
+                        Thread.currentThread().interrupt();
+                    } catch (ExecutionException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
     }
 }

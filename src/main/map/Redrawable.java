@@ -1,5 +1,7 @@
 package main.map;
 
+import java.util.concurrent.Future;
+
 public interface Redrawable {
-    void redraw();
+    Future<Void> redraw();
 }

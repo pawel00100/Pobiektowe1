@@ -4,6 +4,8 @@ import main.map.Redrawable;
 import main.map.snapshots.MapSnapshotHolder;
 
 import javax.swing.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
 public class DetailsPanel extends JPanel implements Redrawable {
     private JLabel animalsOnMapLabel;
@@ -47,12 +49,13 @@ public class DetailsPanel extends JPanel implements Redrawable {
     }
 
     @Override
-    public void redraw() {
-        if(mapSnapshotHolder.uiState.getChosenAnimal() != null) {
-            animalsOnMapLabel.setText("Energy: " + mapSnapshotHolder.uiState.getChosenAnimal().getEnergy());
-            numberOfChildrenLabel.setText("Children: " + mapSnapshotHolder.uiState.getChosenAnimal().getNumberOfChildrenSinceChoosing());
-            numberOfDescendantsLabel.setText("Descendants: " + mapSnapshotHolder.uiState.getChosenAnimal().getNumberOfDescendants());
-            epochOfDeathLabel.setText("Time of Death: " + mapSnapshotHolder.uiState.getEpochOfDeath());
+    public Future<Void> redraw() {
+        if (mapSnapshotHolder.getMapSnapshot().getChosenAnimal() != null) {
+            animalsOnMapLabel.setText("Energy: " + mapSnapshotHolder.getMapSnapshot().getChosenAnimal().getEnergy());
+            numberOfChildrenLabel.setText("Children: " + mapSnapshotHolder.getMapSnapshot().getChosenAnimal().getNumberOfChildrenSinceChoosing());
+            numberOfDescendantsLabel.setText("Descendants: " + mapSnapshotHolder.getMapSnapshot().getChosenAnimal().getNumberOfDescendants());
+            epochOfDeathLabel.setText("Time of Death: " + mapSnapshotHolder.getMapSnapshot().getEpochOfDeath());
         }
+        return CompletableFuture.completedFuture(null);
     }
 }

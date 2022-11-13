@@ -20,6 +20,17 @@ public class MapStatistics {
 
     }
 
+    public MapStatistics(MapStatistics mapStatistics) {
+        numberOfAnimals = mapStatistics.getNumberOfAnimals();
+        numberOfPlants = mapStatistics.getNumberOfPlants();
+        epoch = mapStatistics.getEpoch();
+        totalEnergy = mapStatistics.totalEnergy;
+        totalLifespanAtDeath = mapStatistics.totalLifespanAtDeath;
+        deadAnimals = mapStatistics.deadAnimals;
+        numberOfChildrenOfAliveAnimals = mapStatistics.numberOfChildrenOfAliveAnimals;
+        numberOfEachGenome.putAll(mapStatistics.numberOfEachGenome);
+    }
+
     public int getNumberOfAnimals() {
         return numberOfAnimals;
     }

@@ -1,15 +1,16 @@
 package main.UI;
 
 import main.map.Redrawable;
-import main.map.RectangularMap;
 import main.map.snapshots.MapSnapshotHolder;
-import main.mapElements.Animal;
+import main.map.snapshots.TileInfo;
 import main.mapElements.Vector2d;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
 class MapPanel extends JPanel implements Redrawable {
 
@@ -17,8 +18,8 @@ class MapPanel extends JPanel implements Redrawable {
     private int tileSize;
     private MapSnapshotHolder mapSnapshotHolder;
     private UIState uiState;
-    private RectangularMap map;
 
+    private CompletableFuture<Void> completableFuture;
 
     private ArrayList<ArrayList<MyButton>> buttons = new ArrayList<>();
 
@@ -33,7 +34,6 @@ class MapPanel extends JPanel implements Redrawable {
 
     MapPanel(MapSnapshotHolder mapSnapshotHolder, UIState uiState) {
         super();
-        map = mapSnapshotHolder.uiState.map;
         this.mapSnapshotHolder = mapSnapshotHolder;
         this.uiState = uiState;
         setDimensions();
@@ -46,13 +46,22 @@ class MapPanel extends JPanel implements Redrawable {
 
     @Override
     protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        drawMap(g);
+        try {
+            drawMap(g);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        if (completableFuture != null) {
+            completableFuture.complete(null);
+        }
     }
 
     @Override
-    public void redraw() {
+    public Future<Void> redraw() {
         repaint();
+
+        completableFuture = new CompletableFuture<>();
+        return completableFuture;
     }
 
     private void createButtons() {
@@ -78,8 +87,10 @@ class MapPanel extends JPanel implements Redrawable {
 
     private void setDimensions() { //makes sure that each tile is square and neither width or height is above maxSize
 
-        int widthInTiles = map.upperBoundary.x - map.lowerBoundary.x + 1;
-        int heightInTiles = map.upperBoundary.y - map.lowerBoundary.y + 1;
+        var upperBoundary = mapSnapshotHolder.getMapInformation().getUpperBoundary();
+        var lowerBoundary = mapSnapshotHolder.getMapInformation().getLowerBoundary();
+        int widthInTiles = upperBoundary.x - lowerBoundary.x + 1;
+        int heightInTiles = upperBoundary.y - lowerBoundary.y + 1;
         sizeInTiles = new Vector2d(widthInTiles, heightInTiles);
 
         double heightToWidthRatio = (double) sizeInTiles.y / sizeInTiles.x;
@@ -124,43 +135,38 @@ class MapPanel extends JPanel implements Redrawable {
         uiState.clicked(mapPosition);
     }
 
-    private boolean hasMostFrequentGenome(Vector2d tilePosition) {
-        return map.mapStatistics.isMostFrequentGenome( map.getTile(tilePosition).getStrongestAnimal().getGenome());
-    }
 
     private Color chooseColor(Vector2d tilePosition) {
-        Color color;
-        if (map.isTileOccupied(tilePosition)) {
-            if (uiState.getChosenAnimal() != null && uiState.isChosenAnimalAlive() && tilePosition.equals(uiState.getChosenAnimal().getPosition()))
-                color = ColorScheme.chosenAnimalColor;
+        Color color = ColorScheme.red;
 
-            else if (map.isAnimalOnTile(tilePosition)) {
-                if (uiState.isShowMostFrequent() && hasMostFrequentGenome(tilePosition))
-                    color = ColorScheme.mostFrequentGenome;
-                else
-                    color = colorBasedOnEnergy(map.getTile(tilePosition).getStrongestAnimal());
-            } else if (map.isGrassOnTile(tilePosition))
-                color = ColorScheme.grassColor;
-            else
-                color = Color.RED;
-        } else if (map.isTileJungle(tilePosition)) {
-            if ((tilePosition.x + tilePosition.y) % 2 == 0)
+        TileInfo tileInfo = mapSnapshotHolder.getMapSnapshot().getTileInfoMap().get(tilePosition);
+
+        if (tileInfo instanceof TileInfo.ChosenAnimalTile) {
+            color = ColorScheme.chosenAnimalColor;
+        } else if (tileInfo instanceof TileInfo.AnimalOnTile a) {
+            color = colorBasedOnEnergy(a.getEnergy());
+        } else if (tileInfo instanceof TileInfo.MostFrequentGenome) {
+            color = ColorScheme.mostFrequentGenome;
+        } else if (tileInfo instanceof TileInfo.GrassTile) {
+            color = ColorScheme.grassColor;
+        } else if (tileInfo instanceof TileInfo.JungleTile) {
+            if ((tilePosition.x + tilePosition.y) % 2 == 0) {
                 color = ColorScheme.jungle1;
-            else
+            } else {
                 color = ColorScheme.jungle2;
-        } else {
-            if ((tilePosition.x + tilePosition.y) % 2 == 0)
+            }
+        } else if (tileInfo instanceof TileInfo.GravelTile) {
+            if ((tilePosition.x + tilePosition.y) % 2 == 0) {
                 color = ColorScheme.gravel;
-            else
+            } else {
                 color = ColorScheme.gravel2;
+            }
         }
-
         return color;
     }
 
-    private Color colorBasedOnEnergy(Animal animal) {
-        int energy = animal.getEnergy();
-        int color = Math.min (energy * 2, 255);
+    private Color colorBasedOnEnergy(int energy) {
+        int color = Math.min(energy * 2, 255);
         int color2 = color / 5;
         return new Color(color2, color2, color);
     }

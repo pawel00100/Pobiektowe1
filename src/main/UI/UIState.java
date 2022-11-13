@@ -4,13 +4,20 @@ import main.map.statistics.MapStatisticsTextHistory;
 import main.mapElements.Animal;
 import main.mapElements.Vector2d;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public class UIState {
     RectangularMap map;
     Runnable redraw;
 
     private boolean isRunning = true;
     private double runSpeed = 10;
+    private double runsPerSecondMeasurement = 0;
     public final MapStatisticsTextHistory mapStatisticsTextHistory = new MapStatisticsTextHistory();
+    private final AtomicBoolean drawing = new AtomicBoolean(false);
+    private final AtomicBoolean readyForDraw = new AtomicBoolean(false);
+    private volatile long lastDraw = 0;
+    private final Object monitor = new Object();
 
     private boolean showMostFrequent = false;
     private Animal chosenAnimal = null;
@@ -85,7 +92,48 @@ public class UIState {
         }
     }
 
+    public double getRunsPerSecondMeasurement() {
+        return runsPerSecondMeasurement;
+    }
+
+    public void setRunsPerSecondMeasurement(double runsPerSecondMeasurement) {
+        this.runsPerSecondMeasurement = runsPerSecondMeasurement;
+    }
+
+    public boolean readyForNextFrame() {
+        synchronized (monitor) {
+            monitor.notifyAll();
+        }
+        return !drawing.get() && (System.currentTimeMillis() - lastDraw) > (1000/60);
+    }
+
+    public void signalReadyToDraw() {
+        readyForDraw.set(true);
+        synchronized (monitor) {
+            monitor.notifyAll();
+        }
+    }
+
     public void redraw() {
+        drawing.set(true);
+
         redraw.run();
+
+        drawing.set(false);
+        lastDraw = System.currentTimeMillis();
+
+        synchronized (monitor) {
+            while (!readyForDraw.get()) {
+                try {
+                    if (lastDraw != 0){
+                        monitor.wait();
+                    }
+                } catch (InterruptedException ignored) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+            readyForDraw.set(false);
+            monitor.notifyAll();
+        }
     }
 }
