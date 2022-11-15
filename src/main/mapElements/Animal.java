@@ -1,18 +1,19 @@
 package main.mapElements;
 
 
+import main.Parameters;
 import main.map.RectangularMap;
 
 import java.util.*;
 
 public class Animal extends AbstractMapElement{
-    private static final Random random = new Random();
+    private final SplittableRandom random = new SplittableRandom();
 
-    private RectangularMap map;
+    private final RectangularMap map;
     private MapDirection currentDirection = MapDirection.NORTH;
     private int energy = 0;
     private int lifespan = 0;
-    private List<IPositionChangeObserver> positionChangeObservers = new LinkedList<>();
+    private IPositionChangeObserver positionChangeObserver = null;
     private Genome genome;
     private Animal greatestAncestor = null;
     private int numberOfChildren = 0;
@@ -27,7 +28,7 @@ public class Animal extends AbstractMapElement{
         super(map);
         this.map = map;
         this.genome = genome;
-        appendEnergy(map.parameters.getInt("startEnergy"));
+        this.appendEnergy(Parameters.STARTING_ENERGY);
         this.position = checkCrossingBoundary(position);
 
         map.place(this);
@@ -104,11 +105,13 @@ public class Animal extends AbstractMapElement{
     }
 
     public void addObserver(IPositionChangeObserver observer){
-        positionChangeObservers.add(observer);
+        positionChangeObserver = observer;
     }
 
     public void removeObserver(IPositionChangeObserver observer){
-        positionChangeObservers.remove(observer);
+        if (positionChangeObserver.equals(observer)) {
+            observer = null;
+        }
     }
 
     public void onDeath(){
@@ -142,14 +145,12 @@ public class Animal extends AbstractMapElement{
     }
 
     private void positionChanged(Vector2d newPosition){
-        for (IPositionChangeObserver observer : positionChangeObservers) {
-            observer.elementPositionToBeChangedTo(this, newPosition);
-        }
+        positionChangeObserver.elementPositionToBeChangedTo(this, newPosition);
     }
 
-    private void moveForward(){
-        appendEnergy(-map.parameters.getInt("moveEnergy"));
-        Vector2d futureVector = position.add(currentDirection.toUnitVector());
+    private  void moveForward(){
+        this.appendEnergy(-Parameters.MOVE_ENERGY);
+        Vector2d futureVector = this.position.add(this.currentDirection.toUnitVector());
         futureVector = checkCrossingBoundary(futureVector);
         positionChanged(futureVector);
         position = futureVector;
@@ -158,13 +159,17 @@ public class Animal extends AbstractMapElement{
 
     private Vector2d checkCrossingBoundary(Vector2d position){
         if(position.x > map.upperBoundary.x)
-            position = position.subtract( new Vector2d(map.upperBoundary.x + 1, 0) );
+            position =  new Vector2d(0, position.y) ;
+
         if(position.y > map.upperBoundary.y)
-            position = position.subtract( new Vector2d(0, map.upperBoundary.y + 1) );
+            position =  new Vector2d(position.x, 0) ;
+
         if(position.x < map.lowerBoundary.x)
-            position = position.add( new Vector2d(map.upperBoundary.x + 1, 0) );
+            position =  new Vector2d(map.upperBoundary.x, position.y) ;
+
         if(position.y < map.lowerBoundary.y)
-            position = position.add( new Vector2d(0, map.upperBoundary.y + 1) );
+            position =  new Vector2d(position.x, map.upperBoundary.y) ;
+
 
         return position;
     }

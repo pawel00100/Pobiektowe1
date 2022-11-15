@@ -1,5 +1,7 @@
 package main.mapElements;
 
+import main.map.MapVectorCache;
+
 public class Vector2d {
     public final int x;
     public final int y;
@@ -36,6 +38,12 @@ public class Vector2d {
 
     public Vector2d add(Vector2d other) {
         return new Vector2d(x + other.x, y + other.y);
+    }
+    public Vector2d add(final Vector2d other, final MapVectorCache cache) {
+        if(cache.contains(this.x + other.x, this.y + other.y) ) {
+            return cache.get(this.x + other.x, this.y + other.y);
+        }
+        return new Vector2d(this.x + other.x, this.y + other.y);
     }
 
     public Vector2d subtract(Vector2d other) {

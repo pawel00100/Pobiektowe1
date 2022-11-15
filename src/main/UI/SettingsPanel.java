@@ -1,26 +1,19 @@
 package main.UI;
 
-import main.map.RectangularMap;
-import main.map.snapshots.MapSnapshotHolder;
-
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 
 class SettingsPanel extends JPanel {
-    private MapSnapshotHolder mapSnapshotHolder;
     private UIState uiState;
-
 
     private JLabel label;
     private JSlider slider;
 
-    SettingsPanel(MapSnapshotHolder mapSnapshotHolder, UIState uiState) {
+    SettingsPanel(UIState uiState) {
         super();
-        this.mapSnapshotHolder = mapSnapshotHolder;
         this.uiState = uiState;
 
         createComponents();

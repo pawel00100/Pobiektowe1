@@ -44,7 +44,7 @@ public class UI {
         BoxLayout boxlayout = new BoxLayout(panel, BoxLayout.Y_AXIS);
         panel.setLayout(boxlayout);
 
-        var settingsPanel = new SettingsPanel(mapSnapshotHolder, uiState);
+        var settingsPanel = new SettingsPanel(uiState);
         var mapPanel = new MapPanel(mapSnapshotHolder, uiState);
         var statusPanel = new StatusPanel(mapSnapshotHolder);
         var singleGenomePanel = new SingleGenomePanel(mapSnapshotHolder, null, () -> mapSnapshotHolder.getMapSnapshot().mapStatistics.mostFrequentGenome());

@@ -2,6 +2,7 @@ package main.mapElements;
 
 public enum MapDirection {
     NORTH, NORTHEAST, EAST, SOUTHEAST, SOUTH, SOUTHWEST, WEST, NORTHWEST;
+    private static final MapDirection[] values = MapDirection.values();
 
     public String toString() {
         switch (this) {
@@ -50,12 +51,12 @@ public enum MapDirection {
     }
 
     public static MapDirection generateRandomDirection(){
-        return MapDirection.values()[(int)(8 * Math.random())];
+        return values[(int)(8 * Math.random())];
     }
 
     public  MapDirection rotateBy(int rotations){
         int newValue = (this.ordinal() + rotations) % 8;
-        return MapDirection.values()[newValue];
+        return values[newValue];
     }
 
 

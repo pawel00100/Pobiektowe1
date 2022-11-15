@@ -5,11 +5,12 @@ import main.map.statistics.MapStatistics;
 import main.mapElements.*;
 import org.json.JSONObject;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 import java.util.function.Consumer;
 
-public class RectangularMap implements IPositionChangeObserver
-{
+public class RectangularMap implements IPositionChangeObserver {
     private static final Random random = new Random();
 
     public final Vector2d upperBoundary;
@@ -20,7 +21,7 @@ public class RectangularMap implements IPositionChangeObserver
     public JSONObject parameters;
 
     public List<Animal> animalList = new ArrayList<>(); //separate list of animals allows to skip iterating over grass tiles
-    private Map<Vector2d, Tile> tilesOnMap = new LinkedHashMap<>();
+    private Tiles tiles;
     private int freeTiles;
     private int freeTilesOnJungle;
 
@@ -28,13 +29,16 @@ public class RectangularMap implements IPositionChangeObserver
 
     private Vector2d lowerJungleBoundary;
     private Vector2d upperJungleBoundary;
+    public final MapVectorCache vectorCache;
 
     public RectangularMap(int x, int y, int initialAnimals, double jungleRatio) {
         upperBoundary = new Vector2d(x, y);
         calculateMapParameters(jungleRatio);
 
-        for (int i = 0; i < initialAnimals && freeTiles > 0; i++)
-            new Animal(this, generateRandomUnoccupiedPosition(lowerBoundary, upperBoundary));
+        for (int i = 0; i < initialAnimals && this.freeTiles > 0; i++)
+            new Animal(this, generateRandomUnoccupiedPosition(this.lowerBoundary, this.upperBoundary));
+        vectorCache = new MapVectorCache(lowerBoundary, upperBoundary);
+        tiles = new DenseTiles(this);
     }
 
     public RectangularMap(int x, int y) {
@@ -59,14 +63,14 @@ public class RectangularMap implements IPositionChangeObserver
     }
 
     public boolean isTileOccupied(Vector2d position) {
-        return tilesOnMap.containsKey(position);
+        return tiles.containsKey(position);
     }
 
     public Tile getTile(Vector2d position) {
         if (!isTileOccupied(position))
             throw new IllegalArgumentException("Accesing nonexistient tile at: " + position.toString());
         else
-            return tilesOnMap.get(position);
+            return tiles.get(position);
     }
 
     @Override
@@ -80,26 +84,26 @@ public class RectangularMap implements IPositionChangeObserver
 
     public boolean isElementOnMap(AbstractMapElement element) {
         Vector2d position = element.getPosition();
-        if (tilesOnMap.containsKey(position))
-            return tilesOnMap.get(position).isElementOnTile(element);
+        if (tiles.containsKey(position))
+            return tiles.get(position).isElementOnTile(element);
 
         return false;
     }
 
-    public Animal getAnimalByNumber(int num){
+    public Animal getAnimalByNumber(int num) {
         return animalList.get(num);
     }
 
     public boolean isAnimalOnTile(Vector2d position) {
         if (isTileOccupied(position))
-            return tilesOnMap.get(position).isAnimalOnTile();
+            return tiles.get(position).isAnimalOnTile();
 
         return false;
     }
 
     public boolean isGrassOnTile(Vector2d position) {
         if (isTileOccupied(position))
-            return tilesOnMap.get(position).isGrassOnTile();
+            return tiles.get(position).isGrassOnTile();
 
         return false;
     }
@@ -109,10 +113,15 @@ public class RectangularMap implements IPositionChangeObserver
     }
 
     public void updateEnergies() {
-        List<Animal> newList = new ArrayList<>(animalList);
-        for (Animal animal : newList)
-            if (animal.getEnergy() <= 0)
-                remove(animal);
+        List<Animal> toRemove = new ArrayList<>(6);
+        for (Animal animal : animalList) {
+            if (animal.getEnergy() <= 0) {
+                toRemove.add(animal);
+            }
+        }
+        for (Animal animal : toRemove) {
+            remove(animal);
+        }
     }
 
     public void run() {
@@ -120,16 +129,35 @@ public class RectangularMap implements IPositionChangeObserver
     }
 
     public void eatAndReproduce() {
-        Map<Vector2d, Tile> newMap = new LinkedHashMap<>(tilesOnMap); //copy, because map may be modified
-        newMap.values().forEach(Tile::eatAndReproduce);
+        var allTiles = tiles.getAll();
+
+        int eatenGrass = 0; // loop instead of stream for performance
+        if (allTiles instanceof List<Tile> list) {
+            for (int i = 0; i < allTiles.size(); i++) {
+                boolean e = list.get(i).eatAndReproduce();
+                if (e) {
+                    eatenGrass++;
+                }
+            }
+        } else {
+            for (Tile allTile : allTiles) {
+                boolean e = allTile.eatAndReproduce();
+                if (e) {
+                    eatenGrass++;
+                }
+            }
+        }
+
+
+        mapStatistics.appendNumberOfPlants(-eatenGrass);
     }
 
     public void placePlants() {
         for (int i = 0; i < parameters.getInt("plantsPerTick"); i++) {
-            if(freeTilesOnJungle > 0)
+            if (freeTilesOnJungle > 0)
                 new Grass(this, generateRandomUnoccupiedPosition(lowerJungleBoundary, upperJungleBoundary));
-            if(freeTiles - freeTilesOnJungle > 0)
-                new Grass(this,generateRandomPositionWithException(lowerBoundary, upperBoundary, lowerJungleBoundary, upperJungleBoundary));
+            if (freeTiles - freeTilesOnJungle > 0)
+                new Grass(this, generateRandomPositionWithException(lowerBoundary, upperBoundary, lowerJungleBoundary, upperJungleBoundary));
         }
     }
 
@@ -138,16 +166,17 @@ public class RectangularMap implements IPositionChangeObserver
 
         try {
             Thread.sleep(200);
-        }catch(Exception ignored){}
+        } catch (Exception ignored) {
+        }
     }
 
-    private void calculateMapParameters(double jungleRatio){
+    private void calculateMapParameters(double jungleRatio) {
         upperJungleBoundary = calculateJungleBoundary(jungleRatio, true);
         lowerJungleBoundary = calculateJungleBoundary(jungleRatio, false);
 
 
         freeTiles = (upperBoundary.x - lowerBoundary.x + 1) * (upperBoundary.y - lowerBoundary.y + 1);
-        freeTilesOnJungle = (upperJungleBoundary.x - lowerJungleBoundary.x + 1) * ( upperJungleBoundary.y - lowerJungleBoundary.y + 1);
+        freeTilesOnJungle = (upperJungleBoundary.x - lowerJungleBoundary.x + 1) * (upperJungleBoundary.y - lowerJungleBoundary.y + 1);
     }
 
     private Vector2d calculateJungleBoundary(double jungleRatio, boolean calculateUpper) { //by default calculates lower
@@ -157,7 +186,7 @@ public class RectangularMap implements IPositionChangeObserver
         return new Vector2d(lowerBoundary, upperBoundary);
     }
 
-    private int calculateJungleBoundary(double jungleRatio, int upperBoundary, int lowerBoundary, boolean calculateUpper){
+    private int calculateJungleBoundary(double jungleRatio, int upperBoundary, int lowerBoundary, boolean calculateUpper) {
         int boundaryCenter = (upperBoundary - lowerBoundary) / 2;
         int boundaryOffset = (int) Math.ceil(Math.sqrt(jungleRatio) * (upperBoundary - lowerBoundary) / 2);
         int boundary;
@@ -195,7 +224,7 @@ public class RectangularMap implements IPositionChangeObserver
             animalList.remove(animal);
             mapStatistics.appendNumberOfAnimals(-1);
             onAnimalDeath.accept(animal);
-            mapStatistics.appendTotalLifespanAtDeath( (animal).getLifespan() );
+            mapStatistics.appendTotalLifespanAtDeath((animal).getLifespan());
             mapStatistics.appendDeadAnimals(1);
             animal.onDeath();
         }
@@ -214,23 +243,23 @@ public class RectangularMap implements IPositionChangeObserver
     }
 
     private void putOnTile(AbstractMapElement element, Vector2d position) { //adds element on tile
-        if (!tilesOnMap.containsKey(position)) {
-            tilesOnMap.put(position, new Tile(this, position));
-            freeTiles--;
-            if(position.precedes(upperJungleBoundary) && position.follows(lowerJungleBoundary))
-                freeTilesOnJungle--;
+        if (!tiles.containsKey(position)) {
+            tiles.createTileIfNecessary(position, this);
+            this.freeTiles--;
+            if (position.precedes(this.upperJungleBoundary) && position.follows(this.lowerJungleBoundary))
+                this.freeTilesOnJungle--;
         }
-        tilesOnMap.get(position).putOnTile(element);
+        tiles.get(position).putOnTile(element);
     }
 
     private void removeFromTile(AbstractMapElement element, Vector2d position) {
-        tilesOnMap.get(position).removeFromTile(element);
+        tiles.get(position).removeFromTile(element);
 
-        if (tilesOnMap.get(position).isEmpty()) {
-            tilesOnMap.remove(position);
-            freeTiles++;
-            if(position.precedes(upperJungleBoundary) && position.follows(lowerJungleBoundary))
-                freeTilesOnJungle++;
+        if (tiles.get(position).isEmpty()) {
+            tiles.removeTileIfNecessary(position);
+            this.freeTiles++;
+            if (position.precedes(this.upperJungleBoundary) && position.follows(this.lowerJungleBoundary))
+                this.freeTilesOnJungle++;
         }
     }
 
@@ -247,12 +276,12 @@ public class RectangularMap implements IPositionChangeObserver
         return vec;
     }
 
-    private Vector2d generateRandomPositionWithException(Vector2d lowerBoundary, Vector2d upperBoundary, Vector2d exceptionLowerBoundary, Vector2d exceptionUpperBondary){
+    private Vector2d generateRandomPositionWithException(Vector2d lowerBoundary, Vector2d upperBoundary, Vector2d exceptionLowerBoundary, Vector2d exceptionUpperBondary) {
         Vector2d vec;
-        do{
+        do {
             vec = generateRandomUnoccupiedPosition(lowerBoundary, upperBoundary);
         }
-        while(vec.follows(exceptionLowerBoundary) && vec.precedes(exceptionUpperBondary));
+        while (vec.follows(exceptionLowerBoundary) && vec.precedes(exceptionUpperBondary));
         return vec;
     }
 
